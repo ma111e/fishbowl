@@ -1,0 +1,175 @@
+.fishbowl-badges-container {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: text-bottom;
+  font-size: inherit;
+  color: inherit;
+}
+
+.fishbowl-badges-container>a {
+  text-decoration: none;
+  color: inherit;
+  margin-left: 2px;
+}
+
+/* IP Icon styles for private and bogon IPs */
+.fishbowl-ip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1em;
+  height: 1em;
+  padding: 0 0.25em;
+  margin-left: 0.125em;
+  border-radius: 0.25em;
+  font-size: 0.85em;
+  line-height: 1;
+  cursor: pointer;
+  vertical-align: middle;
+  pointer-events: auto;
+  background-color: var(--color-badge-bg, oklch(0.0000 0.0000 0.00 / 0.1000));
+  color: inherit;
+  user-select: none;
+  border: 1px solid var(--color-badge-border, transparent);
+}
+
+.fishbowl-ip-icon {
+  text-decoration: none;
+}
+
+/* IP type icons in HUD panel */
+#ip-list .ip-item .fishbowl-ip-icon {
+  margin-left: 8px;
+  font-size: 14px;
+  position: relative;
+  top: -1px;
+}
+
+/* Analysis Indicators (spinner while analyzing) */
+.analysis-indicator-container {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 4px;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.analysis-indicator-container .progress-circle {
+  width: 1em;
+  height: 1em;
+  transform: rotate(-90deg);
+  overflow: visible;
+  display: block;
+}
+
+.analysis-indicator-container .progress-circle-track {
+  fill: none;
+  stroke: var(--color-border-muted);
+  stroke-width: 2;
+}
+
+
+.analysis-indicator-container .progress-circle-indicator {
+  fill: none;
+  stroke: var(--color-text-secondary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 150ms linear;
+}
+
+.analysis-indicator-container .progress-circle.progress-circle-indeterminate {
+  animation: fishbowlProgressSpin 1s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes fishbowlProgressSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Text badge styles */
+.fishbowl-text-badge {
+  background-color: var(--color-badge-bg, oklch(0.9702 0.0000 89.88));
+  color: var(--color-badge-text, oklch(0.3211 0.0000 89.88));
+  max-height: 22px;
+  border-radius: 2px;
+  padding: 0 2px;
+  font-size: 12px;
+  font-family: monospace;
+  text-decoration: none;
+  font-weight: 500;
+  border: 1px solid var(--color-badge-border, oklch(0.9067 0.0000 89.88));
+  position: relative;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.fishbowl-badges-container.text-badges {
+  margin-left: 3px;
+  display: inline-flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-malicious+.fishbowl-badges-container .fishbowl-vt-badge {
+  color: var(--color-verdict-malicious-text);
+  border-color: var(--color-verdict-malicious-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-malicious+.fishbowl-badges-container .fishbowl-abuseipdb-badge {
+  color: var(--color-verdict-malicious-text);
+  border-color: var(--color-verdict-malicious-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-suspicious+.fishbowl-badges-container .fishbowl-vt-badge {
+  color: var(--color-verdict-suspicious-text);
+  border-color: var(--color-verdict-suspicious-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-suspicious+.fishbowl-badges-container .fishbowl-abuseipdb-badge {
+  color: var(--color-verdict-suspicious-text);
+  border-color: var(--color-verdict-suspicious-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-neutral+.fishbowl-badges-container .fishbowl-vt-badge {
+  color: var(--color-verdict-neutral-text);
+  border-color: var(--color-verdict-neutral-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-neutral+.fishbowl-badges-container .fishbowl-abuseipdb-badge {
+  color: var(--color-verdict-neutral-text);
+  border-color: var(--color-verdict-neutral-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-benign+.fishbowl-badges-container .fishbowl-vt-badge {
+  color: var(--color-verdict-benign-text);
+  border-color: var(--color-verdict-benign-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-benign+.fishbowl-badges-container .fishbowl-abuseipdb-badge {
+  color: var(--color-verdict-benign-text);
+  border-color: var(--color-verdict-benign-border);
+}
+
+/* ASN enrichment badges */
+.fishbowl-type-badge {
+  text-transform: uppercase;
+}
+
+.fishbowl-org-badge {
+  text-transform: none;
+}
+
+/* Known file badge - known OS/vendor binary */
+.fishbowl-known-badge {
+  color: var(--color-verdict-benign-text, oklch(0.4500 0.1200 145.00));
+  border-color: var(--color-verdict-benign-border, oklch(0.6500 0.1000 145.00));
+}

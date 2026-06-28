@@ -1,0 +1,234 @@
+/*
+ * Entity highlights are injected into arbitrary host pages whose own CSS we
+ * don't control. The `!important` declarations in this file are deliberate:
+ * they're needed to win specificity against host-page styles so highlight
+ * colors/borders render consistently. Do not "clean them up" - removing them
+ * lets host pages override the highlights. (Highlight colors still come from
+ * the shared --color-*/--c-* tokens, so theming is unaffected.)
+ */
+
+/* Common highlight styling */
+.fishbowl-highlight {
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  padding: 1px 5px;
+  margin: 0 1px;
+  position: relative;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Event ID highlight styling */
+.fishbowl-event-highlight {
+  background: var(--color-event-highlight-bg);
+  color: var(--color-event-highlight-text, currentColor);
+  border: 1px solid var(--color-event-highlight-border);
+}
+
+body.fishbowl-highlights-hidden .fishbowl-highlight {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  cursor: text !important;
+}
+
+body.fishbowl-highlights-hidden .fishbowl-badges-container {
+  display: none !important;
+}
+
+
+.fishbowl-ip-highlight:not(.ip-item) {
+  background: var(--c-ip-soft);
+  color: var(--c-ip);
+  border: 1px solid var(--c-ip-border) !important;
+  border-radius: 4px;
+}
+
+/* SID highlight styling */
+.fishbowl-sid-highlight:not(.sid-item) {
+  background: var(--color-sid-highlight-bg);
+  color: var(--color-sid-highlight-text, currentColor);
+  border: 1px solid var(--color-sid-highlight-border) !important;
+  border-radius: 4px;
+}
+
+/* ASN highlight styling */
+.fishbowl-asn-highlight:not(.asn-item) {
+  background: var(--color-asn-highlight-bg);
+  color: var(--color-asn-highlight-text, currentColor);
+  border: 1px solid var(--color-asn-highlight-border) !important;
+  border-radius: 4px;
+}
+
+/* Domain highlight styling */
+.fishbowl-domain-highlight:not(.domain-item) {
+  background: var(--color-domain-highlight-bg);
+  color: var(--color-domain-highlight-text, currentColor);
+  border: 1px solid var(--color-domain-highlight-border) !important;
+  border-radius: 4px;
+}
+
+/* File highlight styling */
+.fishbowl-file-highlight:not(.file-item) {
+  background: var(--color-file-highlight-bg);
+  color: var(--color-file-highlight-text, currentColor);
+  border: 1px solid var(--color-file-highlight-border) !important;
+  border-radius: 4px;
+}
+
+/* Hash highlight styling */
+.fishbowl-hash-highlight:not(.hash-item) {
+  background: var(--color-hash-highlight-bg);
+  color: var(--color-hash-highlight-text, currentColor);
+  border: 1px solid var(--color-hash-highlight-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-malicious {
+  background: var(--color-verdict-malicious-bg);
+  color: var(--color-verdict-malicious-text, currentColor);
+  border: 1px solid var(--color-verdict-malicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-suspicious {
+  background: var(--color-verdict-suspicious-bg);
+  color: var(--color-verdict-suspicious-text, currentColor);
+  border: 1px solid var(--color-verdict-suspicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-benign {
+  background: var(--color-verdict-benign-bg);
+  color: var(--color-verdict-benign-text, currentColor);
+  border: 1px solid var(--color-verdict-benign-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-neutral {
+  background: var(--color-verdict-neutral-bg);
+  color: var(--color-verdict-neutral-text, currentColor);
+  border: 1px solid var(--color-verdict-neutral-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-unknown {
+  border: 1px dashed var(--color-verdict-unknown-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-domain-highlight.fishbowl-verdict-malicious {
+  background: var(--color-verdict-malicious-bg);
+  color: var(--color-verdict-malicious-text, currentColor);
+  border: 1px solid var(--color-verdict-malicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-domain-highlight.fishbowl-verdict-suspicious {
+  background: var(--color-verdict-suspicious-bg);
+  color: var(--color-verdict-suspicious-text, currentColor);
+  border: 1px solid var(--color-verdict-suspicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-domain-highlight.fishbowl-verdict-benign {
+  background: var(--color-verdict-benign-bg);
+  color: var(--color-verdict-benign-text, currentColor);
+  border: 1px solid var(--color-verdict-benign-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-domain-highlight.fishbowl-verdict-neutral {
+  background: var(--color-verdict-neutral-bg);
+  color: var(--color-verdict-neutral-text, currentColor);
+  border: 1px solid var(--color-verdict-neutral-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-domain-highlight.fishbowl-verdict-unknown {
+  border: 1px dashed var(--color-verdict-unknown-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-file-highlight.fishbowl-verdict-malicious {
+  background: var(--color-verdict-malicious-bg);
+  color: var(--color-verdict-malicious-text, currentColor);
+  border: 1px solid var(--color-verdict-malicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-file-highlight.fishbowl-verdict-suspicious {
+  background: var(--color-verdict-suspicious-bg);
+  color: var(--color-verdict-suspicious-text, currentColor);
+  border: 1px solid var(--color-verdict-suspicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-file-highlight.fishbowl-verdict-benign {
+  background: var(--color-verdict-benign-bg);
+  color: var(--color-verdict-benign-text, currentColor);
+  border: 1px solid var(--color-verdict-benign-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-file-highlight.fishbowl-verdict-neutral {
+  background: var(--color-verdict-neutral-bg);
+  color: var(--color-verdict-neutral-text, currentColor);
+  border: 1px solid var(--color-verdict-neutral-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-file-highlight.fishbowl-verdict-unknown {
+  border: 1px dashed var(--color-verdict-unknown-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-hash-highlight.fishbowl-verdict-malicious {
+  background: var(--color-verdict-malicious-bg);
+  color: var(--color-verdict-malicious-text, currentColor);
+  border: 1px solid var(--color-verdict-malicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-hash-highlight.fishbowl-verdict-suspicious {
+  background: var(--color-verdict-suspicious-bg);
+  color: var(--color-verdict-suspicious-text, currentColor);
+  border: 1px solid var(--color-verdict-suspicious-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-hash-highlight.fishbowl-verdict-benign {
+  background: var(--color-verdict-benign-bg);
+  color: var(--color-verdict-benign-text, currentColor);
+  border: 1px solid var(--color-verdict-benign-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-hash-highlight.fishbowl-verdict-neutral {
+  background: var(--color-verdict-neutral-bg);
+  color: var(--color-verdict-neutral-text, currentColor);
+  border: 1px solid var(--color-verdict-neutral-border) !important;
+  border-radius: 4px;
+}
+
+.fishbowl-hash-highlight.fishbowl-verdict-unknown {
+  border: 1px dashed var(--color-verdict-unknown-border) !important;
+}
+
+/* Selected highlight styling - generic fallback */
+.fishbowl-highlight.selected {
+  box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--accent);
+}
+
+/* Selected state per entity - bg-gap ring + full entity color outer ring */
+.fishbowl-event-highlight.selected  { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-eventid); }
+.fishbowl-sid-highlight.selected    { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-sid); }
+.fishbowl-asn-highlight.selected    { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-asn); }
+.fishbowl-domain-highlight.selected { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-domain); }
+.fishbowl-file-highlight.selected   { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-file); }
+.fishbowl-hash-highlight.selected   { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-hash); }
+.fishbowl-ip-highlight.selected     { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-ip); }

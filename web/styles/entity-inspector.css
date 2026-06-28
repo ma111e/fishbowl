@@ -1,0 +1,379 @@
+/*
+ * FishBowl Entity Inspector
+ * A master-detail drawer presenting all current-page entities and their
+ * linked info. Loaded into the HUD shadow root (see SHADOW_CSS_PATHS).
+ */
+
+.fishbowl-inspector-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000002;   /* match FishBowlConstants.Z.MODAL so the inspector
+                           modal sits above HUD panels, including ones being
+                           dragged (PANEL_DRAGGING = 1000001) */
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    background: rgba(0, 0, 0, 0.45);
+    pointer-events: auto;
+    font-family: var(--font-ui);
+}
+
+.fishbowl-inspector-drawer {
+    display: flex;
+    flex-direction: column;
+    width: min(760px, 92vw);
+    height: 100%;
+    background: var(--bg-1);
+    border-left: 1px solid var(--border-2);
+    box-shadow: var(--shadow-2);
+    outline: none;
+    /* Reset any text-align inherited from the host page through the shadow host. */
+    text-align: left;
+}
+
+/* --- Header --- */
+.fishbowl-inspector-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: var(--s-4) var(--s-5);
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border-1);
+}
+
+.fishbowl-inspector-title {
+    font-size: var(--t-lg);
+    font-weight: 600;
+    color: var(--fg-1);
+}
+
+.fishbowl-inspector-subtitle {
+    margin-top: 2px;
+    font-size: var(--t-sm);
+    color: var(--fg-3);
+}
+
+.fishbowl-inspector-close {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    line-height: 1;
+    font-size: var(--t-xl);
+    color: var(--fg-3);
+    background: transparent;
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.fishbowl-inspector-close:hover {
+    color: var(--fg-1);
+    background: var(--bg-hover);
+}
+
+/* --- Body layout --- */
+.fishbowl-inspector-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.fishbowl-inspector-rail {
+    flex: 0 0 38%;
+    max-width: 300px;
+    overflow-y: auto;
+    padding: var(--s-2) 0;
+    border-right: 1px solid var(--border-1);
+    background: var(--bg-1);
+}
+
+.fishbowl-inspector-detail {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding: var(--s-4) var(--s-5);
+    color: var(--fg-2);
+}
+
+/* --- Rail groups & rows --- */
+.fishbowl-inspector-group {
+    margin-bottom: var(--s-2);
+}
+
+.fishbowl-inspector-group-header {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-4);
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+}
+
+.fishbowl-inspector-group-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.fishbowl-inspector-group-label {
+    flex: 1;
+}
+
+.fishbowl-inspector-group-count {
+    color: var(--fg-4);
+}
+
+.fishbowl-inspector-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-4) var(--s-1) var(--s-6);
+    font-family: var(--font-mono);
+    font-size: var(--t-sm);
+    color: var(--fg-2);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+}
+
+.fishbowl-inspector-row:hover {
+    background: var(--bg-hover);
+}
+
+.fishbowl-inspector-row-selected {
+    background: var(--bg-3);
+    border-left-color: var(--accent);
+}
+
+.fishbowl-inspector-row-value {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fishbowl-inspector-row-verdict {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--fg-4);
+}
+
+.fishbowl-inspector-rail-empty,
+.fishbowl-inspector-detail-empty {
+    padding: var(--s-5);
+    font-size: var(--t-sm);
+    color: var(--fg-3);
+}
+
+/* --- Detail pane --- */
+.fishbowl-inspector-detail-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-2) var(--s-3);
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--border-1);
+}
+
+.fishbowl-inspector-detail-type {
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+    flex-basis: 100%;
+}
+
+.fishbowl-inspector-detail-value {
+    font-family: var(--font-mono);
+    font-size: var(--t-lg);
+    color: var(--fg-1);
+    word-break: break-all;
+}
+
+.fishbowl-inspector-verdict-pill {
+    padding: 2px var(--s-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: 1px solid currentColor;
+}
+
+.fishbowl-inspector-section {
+    margin-top: var(--s-4);
+}
+
+.fishbowl-inspector-section-label {
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+    margin-bottom: var(--s-2);
+}
+
+.fishbowl-inspector-text {
+    font-size: var(--t-sm);
+    color: var(--fg-2);
+    line-height: 1.5;
+}
+
+/* --- Badges --- */
+.fishbowl-inspector-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1);
+}
+
+.fishbowl-inspector-badge {
+    padding: 2px var(--s-2);
+    font-size: var(--t-xs);
+    color: var(--fg-2);
+    background: var(--bg-2);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-sm);
+}
+
+/* --- Raw sources --- */
+.fishbowl-inspector-source {
+    margin-bottom: var(--s-3);
+    padding: var(--s-2) var(--s-3);
+    background: var(--bg-0);
+    border: 1px solid var(--border-1);
+    border-radius: var(--radius-sm);
+}
+
+.fishbowl-inspector-source-name {
+    font-size: var(--t-sm);
+    font-weight: 600;
+    color: var(--fg-1);
+    text-transform: capitalize;
+    margin-bottom: var(--s-1);
+}
+
+.fishbowl-inspector-source-row {
+    display: flex;
+    gap: var(--s-3);
+    font-size: var(--t-xs);
+    padding: 1px 0;
+}
+
+.fishbowl-inspector-source-key {
+    flex: 0 0 38%;
+    color: var(--fg-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fishbowl-inspector-source-val {
+    flex: 1;
+    color: var(--fg-2);
+    font-family: var(--font-mono);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- Relationships --- */
+.fishbowl-inspector-rel-sublabel {
+    font-size: var(--t-xs);
+    color: var(--fg-4);
+    margin: var(--s-2) 0 var(--s-1);
+}
+
+.fishbowl-inspector-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-1);
+}
+
+.fishbowl-inspector-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    max-width: 100%;
+    padding: 2px var(--s-2);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    color: var(--fg-2);
+    background: var(--bg-2);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.fishbowl-inspector-chip:hover {
+    background: var(--bg-hover);
+    color: var(--fg-1);
+}
+
+.fishbowl-inspector-chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.fishbowl-inspector-chip span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- Actions --- */
+.fishbowl-inspector-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-top: var(--s-5);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--border-1);
+}
+
+.fishbowl-inspector-action {
+    padding: var(--s-2) var(--s-3);
+    font-size: var(--t-sm);
+    color: var(--fg-1);
+    background: var(--bg-2);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.fishbowl-inspector-action:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-0);
+}
+
+/* --- Verdict coloring (shared vocabulary with the HUD panels) --- */
+.fishbowl-inspector-row.fishbowl-verdict-malicious,
+.fishbowl-inspector-verdict-pill.fishbowl-verdict-malicious,
+.fishbowl-inspector-chip.fishbowl-verdict-malicious { color: var(--c-mal); }
+
+.fishbowl-inspector-row.fishbowl-verdict-suspicious,
+.fishbowl-inspector-verdict-pill.fishbowl-verdict-suspicious,
+.fishbowl-inspector-chip.fishbowl-verdict-suspicious { color: var(--c-sus); }
+
+.fishbowl-inspector-row.fishbowl-verdict-benign,
+.fishbowl-inspector-verdict-pill.fishbowl-verdict-benign,
+.fishbowl-inspector-chip.fishbowl-verdict-benign { color: var(--c-ok); }
+
+.fishbowl-inspector-row.fishbowl-verdict-neutral,
+.fishbowl-inspector-verdict-pill.fishbowl-verdict-neutral,
+.fishbowl-inspector-chip.fishbowl-verdict-neutral { color: var(--c-neutral); }
+
+.fishbowl-inspector-row.fishbowl-verdict-unknown,
+.fishbowl-inspector-verdict-pill.fishbowl-verdict-unknown,
+.fishbowl-inspector-chip.fishbowl-verdict-unknown { color: var(--c-unknown); }
+
+.fishbowl-inspector-row.fishbowl-verdict-malicious .fishbowl-inspector-row-verdict { background: var(--c-mal); }
+.fishbowl-inspector-row.fishbowl-verdict-suspicious .fishbowl-inspector-row-verdict { background: var(--c-sus); }
+.fishbowl-inspector-row.fishbowl-verdict-benign .fishbowl-inspector-row-verdict { background: var(--c-ok); }
+.fishbowl-inspector-row.fishbowl-verdict-neutral .fishbowl-inspector-row-verdict { background: var(--c-neutral); }
+.fishbowl-inspector-row.fishbowl-verdict-unknown .fishbowl-inspector-row-verdict { background: var(--c-unknown); }

@@ -1,0 +1,242 @@
+body {
+  font-family: monospace;
+  margin: 0;
+  padding: 20px;
+  background: var(--bg-0);
+  color: var(--fg-1);
+  line-height: 1.3;
+}
+
+h1 {
+  padding-bottom: 5px;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.ip-display {
+  color: var(--fg-1);
+}
+
+.dashboard-error {
+  color: var(--c-danger);
+}
+
+.ascii-art {
+  white-space: pre;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+@media (min-width: 1200px) {
+  .dashboard-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .iframe-container {
+    margin-bottom: 0;
+  }
+}
+
+.iframe-container {
+  border: 1px solid var(--border-1);
+  padding: 10px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.iframe-container h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+}
+
+.iframe-container h2:before {
+  content: "[+] ";
+}
+
+.expand-button {
+  margin-left: auto;
+  background: transparent;
+  color: var(--fg-1);
+  border: 1px solid var(--border-1);
+  font-family: monospace;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 5px;
+  transition: all 0.2s;
+}
+
+.expand-button:hover {
+  background: var(--bg-2);
+}
+
+.iframe-container.expanded {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 999;
+  background: var(--bg-0);
+}
+
+.iframe-container.expanded iframe {
+  min-height: calc(100vh - 150px);
+}
+
+iframe {
+  width: 100%;
+  flex-grow: 1;
+  min-height: 500px;
+  border: 1px solid var(--border-1);
+  background: var(--bg-1);
+}
+
+.error-display {
+  font-size: 12px;
+  text-align: center;
+  padding: 5px;
+  margin-top: 10px;
+  display: none;
+  border-top: 1px dashed var(--border-1);
+}
+
+.fallback-link {
+  display: inline-block;
+  margin: 10px 0;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 5px 10px;
+  border: 1px solid var(--border-1);
+}
+
+.fallback-link:before {
+  content: "[*] ";
+}
+
+.fallback-link:hover {
+  color: var(--accent-strong);
+}
+
+.dashboard-footer {
+  margin-top: 20px;
+  font-size: 12px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* Verdict Analysis Styles */
+.verdict-analysis {
+  margin-top: 20px;
+}
+
+.analysis-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.verdict-summary {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--border-1);
+  padding-bottom: 10px;
+}
+
+.verdict-summary > div {
+  display: flex;
+  gap: 8px;
+}
+
+.verdict-score #overall-score,
+.verdict-level #overall-verdict {
+  font-weight: bold;
+}
+
+.service-verdict-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.service-verdict {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border: 1px dashed var(--border-1);
+}
+
+.service-name {
+  width: 100px;
+}
+
+.service-score {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.analyze-btn {
+  background: var(--bg-2);
+  border: 1px solid var(--c-ok);
+  color: var(--c-ok);
+  font-family: monospace;
+  padding: 5px 8px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.analyze-btn:hover {
+  background: color-mix(in oklab, var(--c-ok) 20%, var(--bg-1));
+}
+
+.analysis-logs {
+  margin-top: 15px;
+  border: 1px solid var(--border-1);
+}
+
+.log-header {
+  border-bottom: 1px solid var(--border-1);
+  padding: 5px 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  background: var(--bg-2);
+}
+
+.fishbowl-popup-logs-container {
+  padding: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.log-entry {
+  margin-bottom: 5px;
+  border-bottom: 1px dotted var(--border-1);
+  padding-bottom: 3px;
+}
+
+.log-timestamp {
+  color: var(--fg-3);
+}
+
+.malicious { color: var(--c-mal); }
+.suspicious { color: var(--c-sus); }
+.neutral { color: var(--c-neutral); }
+.benign { color: var(--c-ok); }

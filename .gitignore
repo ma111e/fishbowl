@@ -1,0 +1,78 @@
+web/dist/*
+dist/
+private/
+dev/
+web/LOAD_ORDER.md
+out/
+example/
+
+# Node
+node_modules/
+
+# Compiled Go binary at repo root (the .exe variants are matched below)
+/fishbowl
+/fishbowl-backend.exe
+
+# Raw dataset source + intermediates. Only the embedded
+# internal/data/datasets/data.gob is committed.
+scripts/serialize_dataset/in/
+scripts/serialize_dataset/*.gob
+
+# Editor / internal tooling
+.windsurf/
+.codex
+.claude/
+docs/superpowers/
+
+# OS
+.DS_Store
+
+# Setup assets are injected by `make build`; keep only the placeholder.
+internal/setup/assets/*
+!internal/setup/assets/README.md
+
+# ---
+
+# Go
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# env file
+.env
+
+# Editor/IDE
+.idea/
+.vscode/
+
+
+# Vue
+# gitignore template for Vue.js projects
+#
+# Recommended template: Node.gitignore
+
+docs/_book
+
+test/

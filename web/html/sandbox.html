@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FishBowl - Investigation Sandbox</title>
+  <link rel="stylesheet" href="../styles/common.css">
+  <link rel="stylesheet" href="../styles/sandbox.css">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header id="sb-header">
+    <!-- Investigation picker + actions -->
+    <div id="sb-inv-picker">
+      <select id="sb-inv-select" title="Select investigation">
+        <option value="">— no investigations —</option>
+      </select>
+      <button class="sb-header-btn sb-btn-primary" id="sb-btn-new" title="Create new investigation from current page">+
+        New</button>
+      <select id="sb-import-tab" title="Select a tab to import from">
+        <option value="">— select a tab —</option>
+      </select>
+      <button class="sb-header-btn" id="sb-btn-import" title="Import entities from selected tab">Import</button>
+      <button class="sb-header-btn" id="sb-btn-rename" title="Rename selected investigation">Rename</button>
+      <button class="sb-header-btn sb-btn-danger" id="sb-btn-delete"
+        title="Delete selected investigation">Delete</button>
+      <span class="sb-header-sep">|</span>
+      <button class="sb-header-btn" id="sb-btn-export" title="Export investigation to JSON">Export</button>
+      <button class="sb-header-btn" id="sb-btn-copy-json" title="Copy investigation JSON to clipboard">Copy JSON</button>
+      <button class="sb-header-btn" id="sb-btn-import-json" title="Import investigation from JSON">Import</button>
+      <input type="file" id="sb-file-import" accept=".json" style="display: none;">
+      <span class="sb-header-sep">|</span>
+      <button class="sb-header-btn sb-layout-btn" data-layout="flow" title="Flow (Left→Right)"><svg width="16"
+          height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <line x1="4" y1="12" x2="20" y2="12"></line>
+          <polyline points="14 6 20 12 14 18"></polyline>
+        </svg></button>
+<button class="sb-header-btn sb-layout-btn" data-layout="force" title="Force-Directed"><svg width="16" height="16"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="10.51" x2="15.42" y2="6.49"></line>
+          <line x1="15.42" y1="17.51" x2="8.59" y2="13.49"></line>
+        </svg></button>
+      <button class="sb-header-btn sb-layout-btn" data-layout="grid" title="Clustered Grid"><svg width="16" height="16"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg></button>
+      <span class="sb-header-sep">|</span>
+      <button class="sb-header-btn sb-btn-danger" id="sb-btn-clear" title="Clear all blocks from workspace">Clear
+        All</button>
+      <label class="sb-header-toggle" title="Show blocks with unknown verdict">
+        <input type="checkbox" id="sb-toggle-unknown" checked> Unknown
+      </label>
+      <label class="sb-header-toggle" title="Show blocks with errors">
+        <input type="checkbox" id="sb-toggle-error" checked> Error
+      </label>
+      <span class="sb-header-sep">|</span>
+      <div id="sb-value-filter" title="Highlight every block that references any selected value">
+        <span id="sb-value-pills"></span>
+        <input type="text" id="sb-value-search" list="sb-value-options"
+          placeholder="Highlight by value…" autocomplete="off">
+      </div>
+      <datalist id="sb-value-options"></datalist>
+    </div>
+
+    <span id="sb-status"></span>
+  </header>
+
+  <!-- Main Content Area -->
+  <div id="sb-main">
+    <!-- Sidebar: Entities -->
+    <div id="sb-sidebar">
+      <div id="sb-sidebar-header">
+        <h2>Entities</h2>
+        <span class="sb-help-text">Drag entities to workspace</span>
+        <input type="text" id="sb-sidebar-search" placeholder="Filter entities…" autocomplete="off">
+        <button id="sb-btn-add-analyzed" class="sb-sidebar-action-btn" title="Add all analysed entities to the workspace">+ Add Analyzed</button>
+      </div>
+      <div id="sb-sidebar-content">
+        <!-- Sidebar lists injected by entity-blocks.js -->
+      </div>
+    </div>
+
+    <!-- Workspace -->
+    <div id="sb-workspace-area">
+      <div id="sb-canvas">
+        <div id="sb-canvas-inner">
+          <!-- SVG link overlay - rendered behind blocks -->
+          <svg id="sb-links-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <marker id="sb-arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="rgba(56,139,253,0.5)" />
+              </marker>
+            </defs>
+          </svg>
+
+          <!-- Workspace entity boxes and enrichment blocks injected here -->
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="sb-empty">
+        <div class="sb-empty-icon">🔬</div>
+        <div class="sb-empty-text" id="sb-empty-text-none">
+          No investigation selected.<br>
+          Click <strong>+ New</strong> to start one, or<br>
+          use exec mode shortcuts <strong>N</strong> / <strong>I</strong> on any page.
+        </div>
+        <div class="sb-empty-text" id="sb-empty-text-blocks" style="display: none;">
+          No blocks on the canvas yet.<br>
+          Drag entities from the sidebar, or
+        </div>
+        <button id="sb-btn-add-analyzed-empty" class="sb-empty-action-btn"
+          title="Add all analysed entities to the workspace" style="display: none;">+ Add Analyzed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts - order matters: config first, then modules -->
+  <script src="../js/constants.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/settings.js"></script>
+  <script src="../js/contracts.js"></script>
+  <script src="../js/log-service.js"></script>
+  <script src="../js/lifecycle.js"></script>
+  <script src="../js/browser-polyfill.min.js"></script>
+  <script src="../js/sandbox/store.js"></script>
+  <script src="../js/sandbox/layout.js"></script>
+  <script src="../js/sandbox/entity-blocks.js"></script>
+  <script src="../js/sandbox/operations.js"></script>
+  <script src="../js/sandbox/drag.js"></script>
+  <script src="../js/sandbox/links.js"></script>
+  <script src="../js/sandbox/viewport.js"></script>
+  <script src="../js/sandbox/main.js"></script>
+</body>
+
+</html>
