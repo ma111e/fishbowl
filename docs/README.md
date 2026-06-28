@@ -1,9 +1,9 @@
 # Fishbowl Documentation
 
-Fishbowl is a local-first browser threat-investigation toolkit. It detects
-security indicators on web pages and enriches them with threat intelligence. An
-interactive workspace maps the relationships between them. Page content is
-processed locally, so nothing is sent to a centralized service.
+Fishbowl is a browser threat-investigation toolkit that runs on your own
+machine. It flags security indicators on web pages and enriches them with threat
+intelligence, and an interactive workspace lets you map how they connect. Page
+content is processed locally, so nothing goes to a central service.
 
 ## Get started
 

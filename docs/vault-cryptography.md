@@ -23,6 +23,23 @@ To register keys or switch unlock modes, see [API Keys](api-keys.md) and the
 Keys and nonces come from `crypto/rand` (or WebCrypto in the extension). There
 are no hard-coded keys, and `math/rand` is never used for secrets.
 
+## Why these tools
+
+If you're new to this, here is what each piece is doing and why it was picked.
+Every row maps a need to the tool that meets it.
+
+| Need | Tool | Why this one |
+|---|---|---|
+| Keep provider keys unreadable on disk | AES-256-GCM | Encrypts the keys and stamps each file with a check value, so a file that was edited or corrupted is refused instead of read back wrong. |
+| Turn a seed or passphrase into the encryption key | Argon2id | Built to be slow and memory-heavy on purpose, so guessing a passphrase by trying millions of options stays too expensive to be worth it. |
+| Notice a wrong passphrase or swapped seed before touching secrets | A small sealed test value in `vault.json` | Fishbowl tries to unseal one known string first; if that fails, the key is wrong and no real secret is ever opened. |
+| Tie the encrypted files to this machine and user | The seed file and your user id, plus the machine id on Linux, all fed into the key | Copy the files to another computer or user and the key can't be rebuilt, so the copies are useless. |
+| Prove a request really came from the paired extension | ECDSA P-256 signatures | Each side has its own private key it never shares; only the real extension can produce a signature that checks out, so there's no shared password to steal. |
+| Stop someone from recording a request and resending it | A timestamp plus a one-time check | A request is accepted once and only within 30 seconds, so a copied request is rejected the second time. |
+| Let the extension spot a fake backend | The backend signs its replies, and the extension remembers the first key it saw | If the reply key ever changes, the extension warns that something may be impersonating the backend. |
+| Hand out a safe one-time code for pairing | A random 6-digit code, compared carefully | The code is random so it can't be guessed, and the comparison takes the same time whether it's right or wrong, so timing can't leak it. |
+| Make every key, code, and random value unpredictable | The operating system's secure random source | Uses the strong randomness meant for security, never the ordinary random numbers used for things like shuffling. |
+
 ## File layout & locations
 
 The vault lives in the per-user OS config directory:
@@ -139,7 +156,8 @@ Before reading a vault file the backend enforces a strict policy
   rather than followed.
 
 Writes are atomic: data goes to a temporary file (`0600`), is `fsync`-ed, then
-renamed into place, so a crash never leaves a half-written secret.
+renamed into place, so a crash leaves either the old file or the complete new
+one, never a partially written secret.
 
 These owner and permission checks apply on Unix-like systems. On Windows the
 equivalent ACL checks are not yet implemented, so vault files there rely on the
@@ -156,9 +174,9 @@ form.
 
 ## Transport authentication (extension ↔ backend)
 
-The backend listens only on localhost, but it still signs and verifies every
-exchange: the server accepts requests only from the paired extension, and the
-extension can tell when it is talking to a spoofed backend.
+The backend listens only on localhost, but it still verifies every request and
+signs its successful responses: the server accepts requests only from the paired
+extension, and the extension can tell when it is talking to a spoofed backend.
 
 ### Request signing
 
@@ -180,13 +198,18 @@ extension can tell when it is talking to a spoofed backend.
 
 ### Freshness & replay protection
 
+These checks run on the protected data routes (`AuthMiddleware`):
+
 - The timestamp must be within ±30 seconds of server time.
 - A nonce cache keyed by the signature rejects any signature seen twice within
   that window, so a captured request cannot be replayed.
 
+The pairing endpoints are guarded differently: `/pair` is protected by its
+single-use code, and `/ping` carries no replay cache.
+
 ### Mutual authentication (response signing)
 
-The server signs each response over:
+The server signs each successful (2xx) response over:
 
 ```
 <request-signature>\n<response-timestamp>\n<response-body>
@@ -213,10 +236,12 @@ a short-lived pairing code:
   enrolling (proof of possession), so a third party cannot register someone
   else's public key.
 
-The pairing flow has dedicated endpoints, each server-signed: **`POST /pair`**
-performs enrollment (pubkey + code → trusted key), and **`POST /ping`** reports
-pairing state and issues a fresh code when the extension isn't enrolled (also
-clearing a stale/foreign key so re-pairing can proceed). The data routes
+The pairing flow has dedicated endpoints whose successful responses are
+server-signed: **`POST /pair`** performs enrollment (pubkey + code → trusted
+key), and **`POST /ping`** reports pairing state and issues a fresh code when the
+extension isn't enrolled (also clearing a stale/foreign key so re-pairing can
+proceed). A failed `/pair` or an unpaired `/ping` reply (`401`) is returned
+unsigned, so the extension can recover before it is enrolled. The data routes
 (`/capabilities`, `/analyze-page`, `/analyze-ip-verdict-from-dom`) require a
 valid enrolled signature and have no pairing side effects.
 
