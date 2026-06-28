@@ -1,0 +1,341 @@
+/* Modal Backdrop */
+.fishbowl-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-modal-backdrop);
+  z-index: 999999;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  overflow-y: auto;
+  pointer-events: auto;
+}
+
+/* Modal Container */
+.fishbowl-modal {
+  position: relative;
+  width: fit-content;
+  min-width: 320px;
+  max-width: min(90vw, 800px);
+  max-height: 80vh;
+  margin: 0 auto;
+  background-color: var(--color-modal-bg);
+  border: 1px solid var(--color-modal-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'CommitMono', 'Courier New', monospace;
+  transform: translateY(-150%);
+  transition: transform 0.3s ease-out;
+  color: var(--color-modal-text);
+}
+
+/* Modal Header */
+.fishbowl-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: var(--bg-1);
+  border-bottom: 1px solid var(--color-modal-border);
+}
+
+.fishbowl-modal-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: normal;
+  color: var(--color-modal-text);
+  text-transform: uppercase;
+}
+
+.fishbowl-modal-header h2:before {
+  /* content: "[+] "; */
+}
+
+.fishbowl-modal-close {
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--color-modal-close);
+  line-height: 1;
+}
+
+.fishbowl-modal-close:hover {
+  color: var(--color-modal-close-hover);
+}
+
+/* Modal Content */
+.fishbowl-modal-content {
+  padding: 15px;
+  overflow-y: auto;
+  max-height: calc(80vh - 60px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-modal-border) transparent;
+}
+
+.fishbowl-modal-card {
+  background: oklch(0.0000 0.0000 0.00 / 0.0500);
+  border: 1px dashed var(--color-modal-card-border);
+  border-radius: 3px;
+  font-family: 'CommitMono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.fishbowl-textarea-inspect-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  background: transparent;
+  /* Isolate from page CSS so button/overlay positioning isn't affected */
+  text-align: left;
+  direction: ltr;
+  text-indent: 0;
+  text-transform: none;
+}
+
+.fishbowl-textarea-inspect-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  pointer-events: none;
+  background: transparent;
+  color: inherit;
+  margin: 0;
+}
+
+/* Highlight spans inside the overlay should be selectable/clickable */
+.fishbowl-textarea-inspect-overlay .fishbowl-highlight {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* During typing, hide only the highlight backgrounds while keeping text visible */
+.fishbowl-textarea-overlay-typing .fishbowl-highlight {
+  background: transparent !important;
+  border-color: transparent !important;
+  text-decoration: none !important;
+}
+
+.fishbowl-textarea-inspect-button {
+  /* Always render the button in light mode, independent of page theme.
+     We use literal light values instead of theme vars: --color-text-primary is
+     resolved to --fg-1 at :root (dark), so it inherits a fixed dark value and
+     overriding --fg-1 here has no effect. The background is also made nearly
+     opaque so the light surface reads as light over a dark page. */
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  pointer-events: auto;
+  background: color-mix(in oklab, oklch(1 0 0) 92%, transparent);
+  color: oklch(0.20 0.012 240);
+  border: 1px dashed oklch(0.20 0.012 240);
+  border-radius: 3px;
+  padding: 2px 2px;
+  font-family: 'CommitMono', monospace;
+  font-size: 11px;
+  line-height: 1.2;
+  cursor: pointer;
+  mix-blend-mode: normal;
+  opacity: 1;
+  transition: opacity 0.25s ease-out;
+  /* Isolate button from page CSS */
+  text-align: center;
+  text-transform: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  white-space: nowrap;
+  float: none;
+  direction: ltr;
+}
+
+/* Auto-hidden state - button fades out after 1s */
+.fishbowl-textarea-inspect-button-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Reveal button on hover over the wrapper layer */
+.fishbowl-textarea-inspect-wrapper:hover .fishbowl-textarea-inspect-button-hidden {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fishbowl-textarea-inspect-button:hover {
+  background: oklch(1 0 0);
+}
+
+.fishbowl-textarea-inspect-wrapper[data-fishbowl-force-light-theme="true"] {
+  /* Force a light button surface regardless of page theme: button bg is
+     color-mix over --bg-0 and text is --color-text-primary (→ --fg-1), so
+     override both primitives to their light values here. */
+  --bg-0: oklch(1 0 0);
+  --fg-1: oklch(0.20 0.012 240);
+}
+
+/* Pull-down indicator */
+#fishbowl-pull-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  z-index: 999999;
+  transition: opacity 0.2s;
+}
+
+/* Pull-down indicator background gradient - will be set dynamically */
+.fishbowl-pull-indicator-bg {
+  background: linear-gradient(90deg, transparent, var(--color-pull-indicator-gradient), transparent);
+}
+
+/* Pull-down release text */
+.fishbowl-pull-release-text {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  font-family: 'CommitMono', monospace;
+  transform: translateX(-50%);
+  color: var(--color-modal-text);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 999999;
+  /* Background will be set dynamically */
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .fishbowl-modal-content {
+    grid-template-columns: 1fr;
+  }
+
+  .fishbowl-modal {
+    max-height: 85vh;
+    margin: 0 10px;
+  }
+}
+
+
+.fishbowl-service-card.fishbowl-verdict-malicious>.fishbowl-service-header {
+  border-bottom: 1px dashed var(--c-mal);
+}
+
+.fishbowl-service-card.fishbowl-verdict-suspicious>.fishbowl-service-header {
+  border-bottom: 1px dashed var(--c-sus);
+}
+
+.fishbowl-service-card.fishbowl-verdict-unknown>.fishbowl-service-header {
+  border-bottom: 1px dashed var(--c-unknown);
+}
+
+.fishbowl-service-card.fishbowl-verdict-neutral>.fishbowl-service-header {
+  border-bottom: 1px dashed var(--c-neutral);
+}
+
+.fishbowl-service-card.fishbowl-verdict-benign>.fishbowl-service-header {
+  border-bottom: 1px dashed var(--c-ok);
+}
+
+/* Service Cards */
+.fishbowl-service-card {
+  background-color: var(--bg-1);
+  overflow: hidden;
+  border: 1px dashed var(--color-modal-border);
+  border-radius: 6px;
+  font-family: 'CommitMono', 'Courier New', monospace;
+}
+
+/* Service Header */
+.fishbowl-service-header {
+  padding: 5px 10px;
+  font-weight: normal;
+  background-color: var(--bg-2);
+  color: var(--fg-3);
+  border-bottom: 1px solid var(--color-modal-border);
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+/* Service Body */
+.fishbowl-service-body {
+  padding: 0 15px;
+  font-size: 12px;
+  color: var(--color-modal-text);
+  line-height: 1.5;
+}
+
+.fishbowl-reputation,
+.fishbowl-details,
+.fishbowl-error {
+  margin-bottom: 4px;
+}
+
+.fishbowl-details ul {
+  margin: 5px 0 0 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.fishbowl-details ul li {
+  display: flex;
+  border-bottom: 1px dotted color-mix(in oklab, var(--border-1) 60%, transparent);
+  line-height: 1.4;
+  text-align: start;
+}
+
+.fishbowl-details ul li:last-child {
+  border-bottom: none;
+}
+
+.fishbowl-details strong {
+  display: inline-block;
+  min-width: 160px;
+  color: var(--fg-3);
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+  padding-right: 8px;
+}
+
+.fishbowl-details {
+  margin-top: 8px;
+}
+
+.fishbowl-service-card.fishbowl-verdict-malicious .fishbowl-vt-score {
+  color: var(--c-mal);
+}
+
+.fishbowl-service-card.fishbowl-verdict-suspicious .fishbowl-vt-score {
+  color: var(--c-sus);
+}
+
+.fishbowl-service-card.fishbowl-verdict-neutral .fishbowl-vt-score {
+  color: var(--c-neutral);
+}
+
+.fishbowl-service-card.fishbowl-verdict-benign .fishbowl-vt-score {
+  color: var(--c-ok);
+}
+
+.fishbowl-error {
+  color: var(--c-danger);
+}

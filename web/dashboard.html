@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FishBowl Dashboard</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+    <h1><span id="ip-display" class="ip-display"></span></h1>
+
+    <div class="dashboard-container">
+        <div class="iframe-container">
+            <h2>VirusTotal<button class="expand-button">[ Expand ]</button></h2>
+            <iframe id="virustotal-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            <div class="error-display" id="virustotal-error">
+                <a href="#" class="fallback-link" id="virustotal-fallback">View on VirusTotal site →</a>
+            </div>
+        </div>
+        
+        <div class="iframe-container">
+            <h2>AbuseIPDB<button class="expand-button">[ Expand ]</button></h2>
+            <iframe id="abuseipdb-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            <div class="error-display" id="abuseipdb-error">
+                <a href="#" class="fallback-link" id="abuseipdb-fallback">View on AbuseIPDB site →</a>
+            </div>
+        </div>
+        
+        <div class="iframe-container">
+            <h2>AlienVault OTX<button class="expand-button">[ Expand ]</button></h2>
+            <iframe id="alienvault-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            <div class="error-display" id="alienvault-error">
+                <a href="#" class="fallback-link" id="alienvault-fallback">View on AlienVault OTX site →</a>
+            </div>
+        </div>
+        
+        <div class="iframe-container">
+            <h2>GreyNoise<button class="expand-button">[ Expand ]</button></h2>
+            <iframe id="greynoise-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            <div class="error-display" id="greynoise-error">
+                <a href="#" class="fallback-link" id="greynoise-fallback">View on GreyNoise site →</a>
+            </div>
+        </div>
+        
+        <div class="iframe-container">
+            <h2>IPinfo<button class="expand-button">[ Expand ]</button></h2>
+            <iframe id="ipinfo-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            <div class="error-display" id="ipinfo-error">
+                <a href="#" class="fallback-link" id="ipinfo-fallback">View on IPinfo site →</a>
+            </div>
+        </div>
+
+        <div class="iframe-container">
+            <h2>Spur<button class="expand-button">[ Expand ]</button></h2>
+            <iframe id="spur-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            <div class="error-display" id="spur-error">
+                <a href="#" class="fallback-link" id="spur-fallback">View on Spur site →</a>
+            </div>
+        </div>
+        
+        <div class="iframe-container">
+            <h2>Whois<button class="expand-button">[ Expand ]</button></h2>
+            <iframe id="whois-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+            <div class="error-display" id="whois-error">
+                <a href="#" class="fallback-link" id="whois-fallback">View on Domaintools site →</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-footer">
+        == FishBowl Dashboard | <span id="current-date"></span> ==
+    </div>
+    
+    <!-- External scripts to avoid CSP violations -->
+    <script src="js/browser-polyfill.min.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+# Fishbowl
+
+[![CI](https://github.com/ma111e/fishbowl/actions/workflows/ci.yml/badge.svg)](https://github.com/ma111e/fishbowl/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/ma111e/fishbowl)](https://github.com/ma111e/fishbowl/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ma111e/fishbowl)](https://goreportcard.com/report/github.com/ma111e/fishbowl)
+
+Fishbowl is a browser-based threat-investigation toolkit. It detects security
+indicators on web pages, enriches them with threat intelligence, and visualizes
+relationships between entities in an interactive investigation workspace.
+
+Page content is processed by a backend running on your machine and is not sent
+to a centralized Fishbowl service. When threat-intelligence enrichment is
+enabled, detected indicators may be sent to the selected third-party providers.
+
+Fishbowl supports Chrome, Chromium-based browsers such as Edge, Brave, and
+Opera, and Firefox.
+
+## Install
+
+Download the latest prebuilt binary for your platform from the
+[releases page](https://github.com/ma111e/fishbowl/releases/latest), extract it,
+and put `fishbowl` on your `PATH`. Confirm the install with `fishbowl version`.
+
+## Quick start
+
+```bash
+fishbowl setup
+```
+
+This opens a local installation page. After the extension is installed,
+`fishbowl setup` starts the backend on `localhost:7158` and prints a 6-digit
+pairing code. Enter the code in the extension to enrol it, then keep the setup
+process running while you use Fishbowl.
+
+For later sessions, or to start the backend manually, run:
+
+```bash
+fishbowl server
+```
+
+Fishbowl scans supported web pages automatically. Browser-internal and other
+restricted pages cannot be scanned by extensions.
+
+API keys are optional. Register them interactively with:
+
+```bash
+fishbowl api register
+```
+
+## What it does
+
+- **Inline detection** — IPs, domains, hashes (SHA-1 and SHA-256), file paths,
+  Windows Event IDs, SIDs, and ASNs, including defanged input.
+- **Threat-intelligence enrichment** — query VirusTotal, AbuseIPDB, MalwareBazaar,
+  Shodan, IPinfo, and Spur.
+- **Investigation sandbox** — drag entities onto a graph, map relationships
+  across pages, and import or export investigations as JSON.
+- **Private, authenticated workflow** — process page content on your machine,
+  store API keys in an encrypted local vault, and authenticate extension-backend
+  traffic with signed requests and responses.
+
+## Documentation
+
+Full documentation is available in the [documentation index](docs/README.md):
+
+- [Quick Start](docs/quick-start.md) | [Installation](docs/installation.md) |
+  [API Keys](docs/api-keys.md)
+- [Detecting Entities](docs/detecting-entities.md) |
+  [Threat Intelligence](docs/threat-intelligence.md) |
+  [Investigation Sandbox](docs/investigation-sandbox.md)
+- [Interface](docs/interface.md) |
+  [Keyboard Shortcuts](docs/keyboard-shortcuts.md)
+- [CLI Reference](docs/cli-reference.md) |
+  [Troubleshooting](docs/troubleshooting.md) | [FAQ](docs/faq.md)
+
+## Build from source
+
+Prerequisites: **Go** ≥ 1.25, **python3** and **zip** (web build), and **Node** 18+
+(`oxlint`).
+
+```bash
+make assets    # build the browser extensions and stage embedded assets
+go build .     # build the fishbowl binary
+
+make release   # full build: extensions + Linux and Windows binaries
+```
+
+## License
+
+Fishbowl is released under the [MIT License](LICENSE).

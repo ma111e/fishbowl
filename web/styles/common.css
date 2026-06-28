@@ -1,0 +1,628 @@
+/* FishBowl Common Styles */
+@font-face {
+    font-family: 'CommitMono';
+    src:
+        local('CommitMono-Regular'),
+        url('../fonts/CommitMono-400-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'CommitMono';
+    src:
+        local('CommitMono-Italic'),
+        url('../fonts/CommitMono-400-Italic.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'CommitMono';
+    src:
+        local('CommitMono-Bold'),
+        url('../fonts/CommitMono-700-Regular.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'CommitMono';
+    src:
+        local('CommitMono-BoldItalic'),
+        url('../fonts/CommitMono-700-Italic.woff2') format('woff2');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+:root, :host {
+    /* ── Radii ──────────────────────────────────────────────── */
+    --radius-sm: 4px;
+    --radius-md: 10px;
+    --radius-lg: 8px;
+
+    /* ── Spacing scale ──────────────────────────────────────── */
+    --s-1: 4px;
+    --s-2: 8px;
+    --s-3: 12px;
+    --s-4: 16px;
+    --s-5: 20px;
+    --s-6: 24px;
+    --s-7: 32px;
+
+    /* ── Type scale (from design export) ────────────────────── */
+    --t-2xl:  22px;
+    --t-xl:   17px;
+    --t-lg:   15px;
+    --t-md:   13.5px;
+    --t-base: 12.5px;
+    --t-sm:   11.5px;
+    --t-xs:   10.5px;
+
+    /* ── Font stack ─────────────────────────────────────────── */
+    --font-mono: 'CommitMono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-ui:   var(--font-sans);
+
+    /* ── Design primitives - dark (default) ─────────────────── */
+    --bg-0:    oklch(0.165 0.012 240);
+    --bg-1:    oklch(0.205 0.014 240);
+    --bg-2:    oklch(0.245 0.014 240);
+    --bg-3:    oklch(0.295 0.015 240);
+    --bg-hover: oklch(0.275 0.016 240);
+
+    --border-1:      oklch(0.30 0.012 240);
+    --border-2:      oklch(0.38 0.014 240);
+    --border-strong: oklch(0.48 0.018 240);
+
+    --fg-1: oklch(0.94 0.006 240);
+    --fg-2: oklch(0.74 0.012 240);
+    --fg-3: oklch(0.56 0.014 240);
+    --fg-4: oklch(0.42 0.014 240);
+
+    /* Brand accent */
+    --accent:        oklch(0.74 0.11 250);
+    --accent-strong: oklch(0.82 0.12 250);
+    --accent-soft:   oklch(0.74 0.11 250 / 0.14);
+    --accent-border: oklch(0.74 0.11 250 / 0.35);
+
+    /* Entity semantic colors */
+    --c-ip:      oklch(0.83 0.12 233); --c-ip-soft:      oklch(0.83 0.12 233 / 0.14); --c-ip-border:      oklch(0.83 0.12 233 / 0.40);
+    --c-hash:    oklch(0.71 0.14 210); --c-hash-soft:    oklch(0.71 0.14 210 / 0.14); --c-hash-border:    oklch(0.71 0.14 210 / 0.40);
+    --c-domain:  oklch(0.86 0.10 188); --c-domain-soft:  oklch(0.86 0.10 188 / 0.14); --c-domain-border:  oklch(0.86 0.10 188 / 0.40);
+    --c-file:    oklch(0.71 0.15 345); --c-file-soft:    oklch(0.71 0.15 345 / 0.14); --c-file-border:    oklch(0.71 0.15 345 / 0.40);
+    --c-eventid: oklch(0.70 0.16 300); --c-eventid-soft: oklch(0.70 0.16 300 / 0.14); --c-eventid-border: oklch(0.70 0.16 300 / 0.40);
+    --c-sid:     oklch(0.70 0.15 255); --c-sid-soft:     oklch(0.70 0.15 255 / 0.14); --c-sid-border:     oklch(0.70 0.15 255 / 0.40);
+    --c-asn:     oklch(0.85 0.13 323); --c-asn-soft:     oklch(0.85 0.13 323 / 0.14); --c-asn-border:     oklch(0.85 0.13 323 / 0.40);
+    --c-url:     oklch(0.83 0.15 278); --c-url-soft:     oklch(0.83 0.15 278 / 0.14); --c-url-border:     oklch(0.83 0.15 278 / 0.40);
+
+    /* State semantic colors (verdict palette) */
+    --c-mal:     oklch(0.72 0.18 25);  --c-mal-soft:     oklch(0.72 0.18 25  / 0.16); --c-mal-border:     oklch(0.72 0.18 25  / 0.45);
+    --c-sus:     oklch(0.82 0.14 75);  --c-sus-soft:     oklch(0.82 0.14 75  / 0.14); --c-sus-border:     oklch(0.82 0.14 75  / 0.40);
+    --c-neutral: oklch(0.68 0.04 235); --c-neutral-soft: oklch(0.68 0.04 235 / 0.14); --c-neutral-border: oklch(0.68 0.04 235 / 0.40);
+    --c-unknown: oklch(0.58 0.005 240); --c-unknown-soft: oklch(0.58 0.005 240 / 0.10); --c-unknown-border: oklch(0.58 0.005 240 / 0.45);
+
+    --c-danger: oklch(0.72 0.18 25);
+    --c-warn:   oklch(0.82 0.14 75);
+    --c-ok:     oklch(0.78 0.13 150);
+
+    /* Elevation shadows */
+    --shadow-1: 0 1px 0 oklch(0.20 0 0 / 0.4), 0 4px 12px oklch(0 0 0 / 0.35);
+    --shadow-2: 0 1px 0 oklch(0.20 0 0 / 0.4), 0 12px 32px oklch(0 0 0 / 0.45);
+
+    /* ── Neutral ladder (mapped to new primitives) ──────────── */
+    --neutral-0: var(--fg-1);
+    --neutral-1: var(--fg-2);
+    --neutral-2: var(--fg-3);
+    --neutral-3: var(--fg-4);
+    --neutral-4: var(--fg-4);
+    --neutral-5: color-mix(in oklab, var(--border-1) 50%, var(--border-2));
+    --neutral-6: var(--bg-3);
+    --neutral-7: var(--bg-2);
+    --neutral-8: var(--bg-1);
+    --neutral-9: var(--bg-0);
+
+    /* ── Accent ramps (back-compat aliases) ─────────────────── */
+    --accent-primary-strong: var(--accent-strong);
+    --accent-primary:        var(--accent);
+    --accent-primary-soft:   var(--accent-soft);
+    --accent-success: var(--c-ok);
+    --accent-warning: var(--c-warn);
+    --accent-danger:  var(--c-danger);
+
+    /* ── Semantic color variables ────────────────────────────── */
+    --color-text-primary:   var(--fg-1);
+    --color-text-secondary: var(--fg-3);
+    --color-bg-primary: transparent;
+    --color-text-heading: var(--fg-1);
+    --color-text-body:    var(--fg-2);
+
+    --color-panel-border:  var(--border-1);
+    --color-panel-surface: color-mix(in oklab, var(--bg-0) 90%, transparent);
+    --color-panel-overlay: color-mix(in oklab, var(--bg-1) 80%, transparent);
+
+    /* RGB channels of --bg-0, for the one place that needs a *runtime-variable*
+       alpha (info-panel opacity slider) where color-mix() can't take a var %.
+       MUST mirror --bg-0; keep in sync if --bg-0 changes. */
+    --fishbowl-panel-bg-rgb: 18, 22, 32;
+
+    /* Status colors */
+    --color-info:     var(--fg-1);
+    --color-scanning: var(--accent);
+    --color-warning:  var(--c-warn);
+    --color-error:    var(--c-danger);
+    --color-low:      var(--c-ok);
+    --color-medium:   var(--c-warn);
+    --color-high:     var(--c-danger);
+    --color-critical: color-mix(in oklab, var(--c-danger) 88%, black);
+    --color-complete: var(--c-ok);
+
+    /* Selected highlight */
+    --color-highlight-selected-bg:     color-mix(in oklab, var(--accent) 25%, transparent);
+    --color-highlight-selected-text:   var(--accent);
+    --color-highlight-selected-border: color-mix(in oklab, var(--accent-strong) 40%, transparent);
+
+    /* Default highlight */
+    --color-highlight-default-bg:     color-mix(in oklab, var(--fg-1) 10%, transparent);
+    --color-highlight-default-text:   var(--fg-1);
+    --color-highlight-default-border: color-mix(in oklab, var(--fg-1) 22%, transparent);
+
+    /* IP verdict colors (state palette) */
+    --color-verdict-malicious-bg:     var(--c-mal-soft);
+    --color-verdict-malicious-text:   var(--c-mal);
+    --color-verdict-malicious-border: var(--c-mal-border);
+
+    --color-verdict-suspicious-bg:     var(--c-sus-soft);
+    --color-verdict-suspicious-text:   var(--c-sus);
+    --color-verdict-suspicious-border: var(--c-sus-border);
+
+    --color-verdict-benign-bg:     color-mix(in oklab, var(--c-ok) 15%, transparent);
+    --color-verdict-benign-text:   var(--c-ok);
+    --color-verdict-benign-border: color-mix(in oklab, var(--c-ok) 30%, transparent);
+
+    --color-verdict-neutral-bg:     var(--c-neutral-soft);
+    --color-verdict-neutral-text:   var(--c-neutral);
+    --color-verdict-neutral-border: var(--c-neutral-border);
+
+    --color-verdict-unknown-text:   var(--c-unknown);
+    --color-verdict-unknown-border: var(--c-unknown-border);
+
+    /* Entity highlight colors */
+    --color-event-highlight-bg:     var(--c-eventid-soft);
+    --color-event-highlight-text:   var(--c-eventid);
+    --color-event-highlight-border: var(--c-eventid-border);
+
+    --color-sid-highlight-bg:     var(--c-sid-soft);
+    --color-sid-highlight-text:   var(--c-sid);
+    --color-sid-highlight-border: var(--c-sid-border);
+
+    --color-asn-highlight-bg:     var(--c-asn-soft);
+    --color-asn-highlight-text:   var(--c-asn);
+    --color-asn-highlight-border: var(--c-asn-border);
+
+    --color-domain-highlight-bg:     var(--c-domain-soft);
+    --color-domain-highlight-text:   var(--c-domain);
+    --color-domain-highlight-border: var(--c-domain-border);
+
+    --color-file-highlight-bg:     var(--c-file-soft);
+    --color-file-highlight-text:   var(--c-file);
+    --color-file-highlight-border: var(--c-file-border);
+
+    --color-hash-highlight-bg:     var(--c-hash-soft);
+    --color-hash-highlight-text:   var(--c-hash);
+    --color-hash-highlight-border: var(--c-hash-border);
+
+    /* HUD Panel colors */
+    --color-ip-item:     var(--c-ip);
+    --color-domain-item: var(--c-domain);
+    --color-asn-item:    var(--c-asn);
+    --color-event-item:  var(--c-eventid);
+    --color-sid-item:    var(--c-sid);
+
+    /* Button colors */
+    --color-hint-button-bg:       color-mix(in oklab, var(--accent-soft) 35%, var(--bg-1));
+    --color-hint-button-text:     var(--accent);
+    --color-hint-button-border:   var(--accent-border);
+    --color-hint-button-hover-bg: color-mix(in oklab, var(--accent) 25%, var(--bg-1));
+
+    --color-dashboard-button-bg:       color-mix(in oklab, var(--c-ok) 15%, var(--bg-1));
+    --color-dashboard-button-hover-bg: color-mix(in oklab, var(--c-ok) 28%, var(--bg-1));
+    --color-dashboard-button-text:     var(--c-ok);
+    --color-dashboard-button-border:   color-mix(in oklab, var(--c-ok) 40%, transparent);
+
+    --color-analyze-button-bg:       color-mix(in oklab, var(--c-warn) 15%, var(--bg-1));
+    --color-analyze-button-hover-bg: color-mix(in oklab, var(--c-warn) 28%, var(--bg-1));
+    --color-analyze-button-text:     var(--c-warn);
+    --color-analyze-button-border:   color-mix(in oklab, var(--c-warn) 40%, transparent);
+
+    /* UI Element colors */
+    --color-shortcut-key-pressed-bg: color-mix(in oklab, var(--fg-1) 25%, transparent);
+
+    --color-border-muted: var(--border-1);
+
+    --color-select-btn-bg:          color-mix(in oklab, var(--bg-1) 85%, transparent);
+    --color-select-btn-hover-bg:    color-mix(in oklab, var(--bg-2) 85%, transparent);
+    --color-select-btn-focus-shadow: color-mix(in oklab, var(--accent-soft) 50%, transparent);
+
+    --color-scrollbar-thumb: color-mix(in oklab, var(--fg-3) 50%, transparent);
+
+    --color-item-hover-bg: color-mix(in oklab, var(--fg-1) 8%, transparent);
+
+    --color-selected-item-bg:     color-mix(in oklab, var(--accent) 15%, transparent);
+    --color-selected-item-text:   var(--accent);
+    --color-selected-item-border: var(--accent-border);
+
+    /* Modal colors */
+    --color-modal-backdrop:   color-mix(in oklab, var(--bg-0) 80%, transparent);
+    --color-modal-bg:         var(--bg-0);
+    --color-modal-border:     var(--border-2);
+    --color-modal-box-shadow: color-mix(in oklab, var(--bg-0) 60%, transparent);
+    --color-modal-text:       var(--fg-1);
+
+    --color-modal-header-border: var(--border-1);
+    --color-modal-close:         var(--fg-1);
+    --color-modal-close-hover:   var(--accent);
+    --color-modal-card-border:   color-mix(in oklab, var(--border-1) 70%, transparent);
+
+    --color-pull-indicator-gradient: color-mix(in oklab, var(--accent) 50%, transparent);
+
+    /* Service card colors */
+    --color-service-card-bg:       color-mix(in oklab, var(--bg-0) 85%, transparent);
+    --color-service-card-border:   var(--border-1);
+    --color-service-header-bg:     color-mix(in oklab, var(--bg-1) 80%, transparent);
+    --color-service-header-text:   var(--fg-1);
+    --color-service-body-text:     var(--fg-2);
+    --color-service-border-dotted: color-mix(in oklab, var(--border-1) 70%, transparent);
+    --color-service-detail-label:  var(--accent);
+    --color-service-error:         var(--c-danger);
+
+    /* Verdict border colors */
+    --color-verdict-malicious-border-dashed:  var(--c-mal);
+    --color-verdict-suspicious-border-dashed: var(--c-sus);
+    --color-verdict-unknown-border-dashed:    var(--c-unknown);
+    --color-verdict-neutral-border-dashed:    var(--c-neutral);
+    --color-verdict-benign-border-dashed:     var(--c-ok);
+
+    /* Region selector */
+    --color-region-selector-bg:    color-mix(in oklab, var(--accent) 15%, transparent);
+    --color-region-selector-border: var(--accent);
+
+    /* Badge and indicator colors */
+    --color-badge-bg:     color-mix(in oklab, var(--bg-1) 20%, transparent);
+    --color-badge-text:   var(--fg-2);
+    --color-badge-border: color-mix(in oklab, var(--border-1) 20%, transparent);
+    --color-indicator-bg: color-mix(in oklab, var(--bg-1) 35%, transparent);
+
+    --color-region-selection-hint-bg:   oklch(0.00 0.00 0 / 0.70);
+    --color-region-selection-hint-text: var(--fg-1);
+    --color-region-selected-bg:   color-mix(in oklab, var(--accent) 20%, transparent);
+    --color-region-selected-text: var(--accent);
+
+    /* Shortcuts hint */
+    --color-shortcuts-hint-bg:       color-mix(in oklab, var(--bg-1) 92%, transparent);
+    --color-shortcuts-hint-text:     var(--fg-1);
+    --color-shortcuts-hint-border:   oklch(0 0 0 / 0.20);
+    --color-shortcuts-header-border: color-mix(in oklab, var(--fg-1) 20%, transparent);
+    --color-shortcuts-header-text:   var(--accent);
+    --color-shortcut-key-bg:         color-mix(in oklab, var(--fg-1) 15%, transparent);
+    --color-shortcut-key-border:     oklch(0 0 0 / 0.30);
+
+    /* Popup colors - mapped to shared tokens so the popup follows the theme */
+    --color-popup-text-primary:   var(--fg-1);
+    --color-popup-text-secondary: var(--fg-3);
+    --color-popup-text-heading:   var(--fg-1);
+
+    --color-popup-border-light:    var(--border-strong);
+    --color-popup-border-lighter:  var(--border-2);
+    --color-popup-border-lightest: var(--border-1);
+
+    --color-popup-bg-primary:   var(--bg-1);
+    --color-popup-bg-secondary: var(--bg-2);
+    --color-popup-shadow:       color-mix(in oklab, black 5%, transparent);
+
+    --color-popup-tab-inactive: var(--fg-3);
+    --color-popup-tab-active:   var(--accent);
+
+    --color-popup-toggle-bg:     var(--border-2);
+    --color-popup-toggle-active: var(--accent);
+    --color-popup-toggle-knob:   var(--fg-1); /* light knob on dark default; overridden white in light theme */
+
+    --color-popup-button-default-bg:       var(--bg-2);
+    --color-popup-button-default-hover-bg: var(--bg-3);
+    --color-popup-button-primary-bg:       var(--accent);
+    --color-popup-button-primary-text:     var(--bg-0);
+    --color-popup-button-primary-hover-bg: var(--accent-strong);
+    --color-popup-button-danger-bg:        var(--c-danger);
+    --color-popup-button-danger-text:      var(--bg-0);
+    --color-popup-button-clear-bg:         color-mix(in oklab, var(--c-danger) 18%, var(--bg-1));
+    --color-popup-button-clear-hover-bg:   color-mix(in oklab, var(--c-danger) 28%, var(--bg-1));
+
+    --color-popup-shortcut-bg:   var(--bg-2);
+    --color-popup-shortcut-text: var(--fg-3);
+
+    --color-popup-log-info-bg:      color-mix(in oklab, var(--accent) 12%, var(--bg-1));
+    --color-popup-log-info-text:    var(--accent);
+    --color-popup-log-warning-bg:   color-mix(in oklab, var(--c-warn) 14%, var(--bg-1));
+    --color-popup-log-warning-text: var(--c-warn);
+    --color-popup-log-error-bg:     color-mix(in oklab, var(--c-danger) 12%, var(--bg-1));
+    --color-popup-log-error-text:   var(--c-danger);
+    --color-popup-log-empty-text:   var(--fg-3);
+
+    --color-popup-status-restricted-bg:    color-mix(in oklab, var(--accent) 12%, var(--bg-1));
+    --color-popup-status-restricted-text:  var(--accent);
+    --color-popup-status-all-domains-bg:   color-mix(in oklab, var(--c-ok) 14%, var(--bg-1));
+    --color-popup-status-all-domains-text: var(--c-ok);
+    --color-popup-error-text: var(--c-danger);
+}
+
+/* Light theme overrides */
+.fishbowl-theme-light {
+    /* ── Design primitives - light ──────────────────────────── */
+    --bg-0:    oklch(0.985 0.002 240);
+    --bg-1:    oklch(1.00  0     0);
+    --bg-2:    oklch(0.965 0.004 240);
+    --bg-3:    oklch(0.945 0.005 240);
+    --bg-hover: oklch(0.955 0.006 240);
+
+    --border-1:      oklch(0.91 0.005 240);
+    --border-2:      oklch(0.85 0.008 240);
+    --border-strong: oklch(0.74 0.012 240);
+
+    --fg-1: oklch(0.20 0.012 240);
+    --fg-2: oklch(0.38 0.014 240);
+    --fg-3: oklch(0.52 0.014 240);
+    --fg-4: oklch(0.66 0.014 240);
+
+    --accent:        oklch(0.48 0.16 255);
+    --accent-strong: oklch(0.40 0.17 255);
+    --accent-soft:   oklch(0.48 0.16 255 / 0.10);
+    --accent-border: oklch(0.48 0.16 255 / 0.35);
+
+    --c-ip:      oklch(0.64 0.13 233); --c-ip-soft:      oklch(0.64 0.13 233 / 0.10); --c-ip-border:      oklch(0.64 0.13 233 / 0.32);
+    --c-hash:    oklch(0.52 0.13 210); --c-hash-soft:    oklch(0.52 0.13 210 / 0.10); --c-hash-border:    oklch(0.52 0.13 210 / 0.32);
+    --c-domain:  oklch(0.66 0.10 188); --c-domain-soft:  oklch(0.66 0.10 188 / 0.10); --c-domain-border:  oklch(0.66 0.10 188 / 0.32);
+    --c-file:    oklch(0.52 0.15 345); --c-file-soft:    oklch(0.52 0.15 345 / 0.10); --c-file-border:    oklch(0.52 0.15 345 / 0.32);
+    --c-eventid: oklch(0.50 0.16 300); --c-eventid-soft: oklch(0.50 0.16 300 / 0.10); --c-eventid-border: oklch(0.50 0.16 300 / 0.32);
+    --c-sid:     oklch(0.50 0.15 255); --c-sid-soft:     oklch(0.50 0.15 255 / 0.10); --c-sid-border:     oklch(0.50 0.15 255 / 0.32);
+    --c-asn:     oklch(0.66 0.13 323); --c-asn-soft:     oklch(0.66 0.13 323 / 0.12); --c-asn-border:     oklch(0.66 0.13 323 / 0.32);
+    --c-url:     oklch(0.64 0.14 278); --c-url-soft:     oklch(0.64 0.14 278 / 0.10); --c-url-border:     oklch(0.64 0.14 278 / 0.32);
+
+    /* State semantic colors (verdict palette) */
+    --c-mal:     oklch(0.52 0.20 25);  --c-mal-soft:     oklch(0.52 0.20 25  / 0.10); --c-mal-border:     oklch(0.52 0.20 25  / 0.35);
+    --c-sus:     oklch(0.58 0.15 75);  --c-sus-soft:     oklch(0.58 0.15 75  / 0.10); --c-sus-border:     oklch(0.58 0.15 75  / 0.35);
+    --c-neutral: oklch(0.48 0.04 235); --c-neutral-soft: oklch(0.48 0.04 235 / 0.08); --c-neutral-border: oklch(0.48 0.04 235 / 0.30);
+    --c-unknown: oklch(0.55 0.005 240); --c-unknown-soft: oklch(0.55 0.005 240 / 0.06); --c-unknown-border: oklch(0.55 0.005 240 / 0.40);
+
+    --c-danger: oklch(0.52 0.20 25);
+    --c-warn:   oklch(0.58 0.15 75);
+    --c-ok:     oklch(0.50 0.14 150);
+
+    /* Elevation shadows */
+    --shadow-1: 0 1px 0 oklch(0 0 0 / 0.04), 0 4px 14px oklch(0 0 0 / 0.06);
+    --shadow-2: 0 2px 0 oklch(0 0 0 / 0.04), 0 12px 30px oklch(0 0 0 / 0.10);
+
+    /* ── Neutral ladder (light) ─────────────────────────────── */
+    --neutral-0: var(--fg-1);
+    --neutral-1: var(--fg-2);
+    --neutral-2: var(--fg-3);
+    --neutral-3: var(--fg-4);
+    --neutral-6: var(--bg-3);
+    --neutral-7: var(--bg-2);
+    --neutral-8: var(--bg-1);
+    --neutral-9: var(--bg-0);
+
+    /* ── Accent ramps ───────────────────────────────────────── */
+    --accent-primary-strong: var(--accent-strong);
+    --accent-primary:        var(--accent);
+    --accent-primary-soft:   var(--accent-soft);
+    --accent-success: var(--c-ok);
+    --accent-warning: var(--c-warn);
+    --accent-danger:  var(--c-danger);
+
+    /* Semantic overrides */
+    --color-text-primary:   var(--fg-1);
+    --color-text-secondary: var(--fg-3);
+    --color-text-heading:   var(--fg-1);
+    --color-text-body:      var(--fg-2);
+
+    --color-panel-border:  var(--border-1);
+    --color-panel-surface: color-mix(in oklab, var(--bg-1) 90%, transparent);
+    --color-panel-overlay: color-mix(in oklab, var(--bg-1) 85%, transparent);
+
+    /* RGB channels of light --bg-0 (see :root note); mirror --bg-0 if it changes. */
+    --fishbowl-panel-bg-rgb: 249, 249, 252;
+
+    /* Selection controls */
+    --color-select-btn-bg:          color-mix(in oklab, var(--bg-2) 60%, transparent);
+    --color-select-btn-hover-bg:    color-mix(in oklab, var(--bg-3) 60%, transparent);
+    --color-select-btn-focus-shadow: color-mix(in oklab, var(--accent-soft) 40%, transparent);
+
+    /* Button colors */
+    --color-hint-button-bg:       color-mix(in oklab, var(--accent-soft) 25%, var(--bg-1));
+    --color-hint-button-hover-bg: color-mix(in oklab, var(--accent) 15%, var(--bg-1));
+    --color-hint-button-text:     var(--accent);
+    --color-hint-button-border:   var(--accent-border);
+
+    --color-dashboard-button-bg:       color-mix(in oklab, var(--c-ok) 12%, var(--bg-1));
+    --color-dashboard-button-hover-bg: color-mix(in oklab, var(--c-ok) 22%, var(--bg-1));
+    --color-dashboard-button-text:     var(--c-ok);
+    --color-dashboard-button-border:   color-mix(in oklab, var(--c-ok) 35%, transparent);
+
+    --color-analyze-button-bg:       color-mix(in oklab, var(--c-warn) 12%, var(--bg-1));
+    --color-analyze-button-hover-bg: color-mix(in oklab, var(--c-warn) 22%, var(--bg-1));
+    --color-analyze-button-text:     var(--c-warn);
+    --color-analyze-button-border:   color-mix(in oklab, var(--c-warn) 35%, transparent);
+
+    /* Status colors */
+    --color-info:     var(--fg-1);
+    --color-scanning: var(--accent);
+    --color-warning:  var(--c-warn);
+    --color-error:    var(--c-danger);
+    --color-low:      var(--c-ok);
+    --color-medium:   var(--c-warn);
+    --color-high:     var(--c-danger);
+    --color-critical: color-mix(in oklab, var(--c-danger) 88%, black);
+    --color-complete: var(--c-ok);
+
+    /* Highlight colors */
+    --color-highlight-selected-bg:     color-mix(in oklab, var(--accent) 15%, transparent);
+    --color-highlight-selected-text:   var(--accent);
+    --color-highlight-selected-border: color-mix(in oklab, var(--accent) 30%, transparent);
+
+    --color-highlight-default-bg:     color-mix(in oklab, var(--fg-1) 6%, transparent);
+    --color-highlight-default-text:   var(--fg-1);
+    --color-highlight-default-border: color-mix(in oklab, var(--fg-1) 12%, transparent);
+
+    /* Entity highlight colors */
+    --color-event-highlight-bg:     var(--c-eventid-soft);
+    --color-event-highlight-text:   var(--c-eventid);
+    --color-event-highlight-border: var(--c-eventid-border);
+
+    --color-sid-highlight-bg:     var(--c-sid-soft);
+    --color-sid-highlight-text:   var(--c-sid);
+    --color-sid-highlight-border: var(--c-sid-border);
+
+    --color-asn-highlight-bg:     var(--c-asn-soft);
+    --color-asn-highlight-text:   var(--c-asn);
+    --color-asn-highlight-border: var(--c-asn-border);
+
+    --color-domain-highlight-bg:     var(--c-domain-soft);
+    --color-domain-highlight-text:   var(--c-domain);
+    --color-domain-highlight-border: var(--c-domain-border);
+
+    --color-file-highlight-bg:     var(--c-file-soft);
+    --color-file-highlight-text:   var(--c-file);
+    --color-file-highlight-border: var(--c-file-border);
+
+    --color-hash-highlight-bg:     var(--c-hash-soft);
+    --color-hash-highlight-text:   var(--c-hash);
+    --color-hash-highlight-border: var(--c-hash-border);
+
+    /* HUD Panel colors */
+    --color-ip-item:     var(--c-ip);
+    --color-domain-item: var(--c-domain);
+    --color-asn-item:    var(--c-asn);
+    --color-event-item:  var(--c-eventid);
+    --color-sid-item:    var(--c-sid);
+
+    /* IP verdict highlight colors (state palette) */
+    --color-verdict-malicious-bg:     var(--c-mal-soft);
+    --color-verdict-malicious-text:   var(--c-mal);
+    --color-verdict-malicious-border: var(--c-mal-border);
+
+    --color-verdict-suspicious-bg:     var(--c-sus-soft);
+    --color-verdict-suspicious-text:   var(--c-sus);
+    --color-verdict-suspicious-border: var(--c-sus-border);
+
+    --color-verdict-benign-bg:     color-mix(in oklab, var(--c-ok) 12%, transparent);
+    --color-verdict-benign-text:   var(--c-ok);
+    --color-verdict-benign-border: color-mix(in oklab, var(--c-ok) 25%, transparent);
+
+    --color-verdict-neutral-bg:     var(--c-neutral-soft);
+    --color-verdict-neutral-text:   var(--c-neutral);
+    --color-verdict-neutral-border: var(--c-neutral-border);
+
+    --color-verdict-unknown-text:   var(--c-unknown);
+    --color-verdict-unknown-border: var(--c-unknown-border);
+
+    /* UI Element colors */
+    --color-selected-item-bg:   color-mix(in oklab, var(--accent) 12%, transparent);
+    --color-selected-item-text: var(--accent);
+
+    /* Region selector */
+    --color-region-selector-bg:        color-mix(in oklab, var(--accent) 12%, transparent);
+    --color-region-selector-border:    var(--accent);
+    --color-region-selection-hint-bg:  color-mix(in oklab, var(--bg-1) 90%, transparent);
+    --color-region-selection-hint-text: var(--fg-1);
+    --color-region-selected-bg:   color-mix(in oklab, var(--accent) 12%, transparent);
+    --color-region-selected-text: var(--accent);
+
+    /* Shortcuts hint */
+    --color-shortcuts-hint-bg:       color-mix(in oklab, var(--bg-2) 92%, transparent);
+    --color-shortcuts-hint-text:     var(--fg-1);
+    --color-shortcuts-hint-border:   color-mix(in oklab, var(--fg-1) 15%, transparent);
+    --color-shortcuts-header-border: color-mix(in oklab, var(--fg-1) 8%, transparent);
+    --color-shortcuts-header-text:   var(--accent);
+    --color-shortcut-key-bg:         color-mix(in oklab, var(--fg-1) 7%, transparent);
+    --color-shortcut-key-border:     color-mix(in oklab, var(--fg-1) 15%, transparent);
+
+    /* Badge and indicator colors */
+    --color-badge-bg:     color-mix(in oklab, var(--fg-1) 5%, transparent);
+    --color-badge-text:   var(--fg-1);
+    --color-badge-border: color-mix(in oklab, var(--fg-1) 10%, transparent);
+    --color-indicator-bg: color-mix(in oklab, var(--fg-1) 8%, transparent);
+
+    /* Popup colors: all popup tokens reference shared tokens in :root, so the
+       popup themes automatically. Only the toggle knob needs a light-theme
+       override (a white knob instead of the dark-default light knob). */
+    --color-popup-toggle-knob: var(--bg-1);
+}
+
+/* ── fb-dark / fb-light - explicit class-based theme scoping ── */
+/* Mirrors :root (dark) and .fishbowl-theme-light so the popup
+   body can carry fb-dark/fb-light independently of the page. */
+.fb-dark {
+    --bg-0:    oklch(0.165 0.012 240);
+    --bg-1:    oklch(0.205 0.014 240);
+    --bg-2:    oklch(0.245 0.014 240);
+    --bg-3:    oklch(0.295 0.015 240);
+    --border-1:      oklch(0.30 0.012 240);
+    --border-2:      oklch(0.38 0.014 240);
+    --border-strong: oklch(0.48 0.018 240);
+    --fg-1: oklch(0.94 0.006 240);
+    --fg-2: oklch(0.74 0.012 240);
+    --fg-3: oklch(0.56 0.014 240);
+    --fg-4: oklch(0.42 0.014 240);
+    --accent:        oklch(0.74 0.11 250);
+    --accent-strong: oklch(0.82 0.12 250);
+    --accent-soft:   oklch(0.74 0.11 250 / 0.14);
+    --accent-border: oklch(0.74 0.11 250 / 0.35);
+    --c-ok: oklch(0.78 0.13 150);
+    --color-popup-toggle-knob: var(--fg-1);
+    color-scheme: dark;
+}
+
+.fb-light {
+    --bg-0:    oklch(0.985 0.002 240);
+    --bg-1:    oklch(1.00  0     0);
+    --bg-2:    oklch(0.965 0.004 240);
+    --bg-3:    oklch(0.945 0.005 240);
+    --border-1:      oklch(0.91 0.005 240);
+    --border-2:      oklch(0.85 0.008 240);
+    --border-strong: oklch(0.74 0.012 240);
+    --fg-1: oklch(0.20 0.012 240);
+    --fg-2: oklch(0.38 0.014 240);
+    --fg-3: oklch(0.52 0.014 240);
+    --fg-4: oklch(0.66 0.014 240);
+    --accent:        oklch(0.48 0.16 255);
+    --accent-strong: oklch(0.40 0.17 255);
+    --accent-soft:   oklch(0.48 0.16 255 / 0.10);
+    --accent-border: oklch(0.48 0.16 255 / 0.35);
+    --c-ok: oklch(0.50 0.14 150);
+    --color-popup-toggle-knob: var(--bg-1);
+    color-scheme: light;
+}
+
+/* ── fb-surface - base reset for component surfaces ─────────── */
+.fb-surface,
+.fb-surface * {
+    box-sizing: border-box;
+}
+.fb-surface {
+    font-family: var(--font-ui);
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* ── Utilities ───────────────────────────────────────────────── */
+.fb-num { font-variant-numeric: tabular-nums; }
+
+.fb-compact {
+    --s-1: 3px; --s-2: 6px;  --s-3: 10px; --s-4: 14px;
+    --s-5: 16px; --s-6: 20px; --s-7: 26px;
+}

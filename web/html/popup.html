@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FishBowl</title>
+  <link rel="stylesheet" href="../styles/common.css">
+  <link rel="stylesheet" href="../styles/popup.css">
+</head>
+<body class="fb-dark">
+<div class="fb-surface fb-popup">
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="fb-popup-header">
+    <div class="fb-popup-header-top">
+      <span class="fb-popup-title">fishbowl</span>
+      <span class="fb-popup-status-pill" id="fb-status-pill">
+        <span class="fb-popup-status-dot"></span>
+        ACTIVE
+      </span>
+    </div>
+    <nav class="fb-popup-tabnav">
+      <button class="fishbowl-popup-tab-button active" data-tab="settings">Settings</button>
+      <button class="fishbowl-popup-tab-button" data-tab="analysis">Analysis</button>
+      <button class="fishbowl-popup-tab-button" data-tab="activity-logs">Logs</button>
+      <button class="fishbowl-popup-tab-button" data-tab="domain-whitelist">Whitelist</button>
+      <button class="fishbowl-popup-tab-button" data-tab="debug">Debug</button>
+    </nav>
+  </header>
+
+  <!-- ── Body ───────────────────────────────────────────── -->
+  <div class="fb-popup-body">
+
+    <!-- ── Pairing panel (hidden by default) ───────────── -->
+    <section id="fb-pair-panel" class="fb-card" style="display:none; border:1px solid #1f6feb; background:#0d1c2e;">
+      <header class="fb-card-header">
+        <h3 class="fb-card-title" style="color:#58a6ff;">Pair with backend</h3>
+      </header>
+      <p style="margin:4px 0 8px; font-size:0.85rem; color:#8b949e;">
+        The backend is waiting for a pairing code. Open the setup page in the FishBowl backend terminal (or run <code>fishbowl api pair</code>) and enter the 6-digit code below.
+      </p>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <input id="fb-pair-input" inputmode="numeric" pattern="[0-9]*" maxlength="6"
+          placeholder="123456"
+          style="flex:1; padding:6px 10px; font-family:ui-monospace,monospace; font-size:1.1rem; letter-spacing:0.15em; background:#0d1117; color:#e6edf3; border:1px solid #30363d; border-radius:6px;">
+        <button id="fb-pair-submit" type="button"
+          style="padding:6px 14px; background:#238636; color:#fff; border:0; border-radius:6px; cursor:pointer;">Pair</button>
+      </div>
+      <p id="fb-pair-status" style="margin:8px 0 0; font-size:0.82rem; min-height:1em;"></p>
+    </section>
+
+    <!-- ── Settings tab ─────────────────────────────────── -->
+    <div id="settings-tab" class="fishbowl-popup-tab-content active">
+
+      <!-- Highlights -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Highlights</h3>
+        </header>
+
+        <label class="fb-toggle-row" for="toggle-ip-addresses">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-ip-addresses" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">IP Addresses</span>
+            <span class="fb-toggle-right">
+              <span class="fb-color-dot" style="background:var(--c-ip)"></span>
+            </span>
+          </div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-event-ids">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-event-ids" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">Windows Event IDs</span>
+            <span class="fb-toggle-right">
+              <span class="fb-color-dot" style="background:var(--c-eventid)"></span>
+            </span>
+          </div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-sids">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-sids" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">Security IDs (SIDs)</span>
+            <span class="fb-toggle-right">
+              <span class="fb-color-dot" style="background:var(--c-sid)"></span>
+            </span>
+          </div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-asn">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-asn" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">ASN</span>
+            <span class="fb-toggle-right">
+              <span class="fb-color-dot" style="background:var(--c-asn)"></span>
+            </span>
+          </div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-domains">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-domains" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">Domains</span>
+            <span class="fb-toggle-right">
+              <span class="fb-color-dot" style="background:var(--c-domain)"></span>
+            </span>
+          </div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-hashes">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-hashes" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">Hashes</span>
+            <span class="fb-toggle-right">
+              <span class="fb-color-dot" style="background:var(--c-hash)"></span>
+            </span>
+          </div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-files">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-files" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">Files</span>
+            <span class="fb-toggle-right">
+              <span class="fb-color-dot" style="background:var(--c-file)"></span>
+            </span>
+          </div>
+        </label>
+      </section>
+
+      <!-- Info Panels -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Info Panels (current site)</h3>
+        </header>
+        <div id="info-panels-current-domain" class="fb-hint"></div>
+        <div id="info-panels-visibility-list"></div>
+      </section>
+
+      <!-- Appearance -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Appearance</h3>
+        </header>
+
+        <label class="fb-toggle-row" for="toggle-visual-updates">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-visual-updates" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Show HUD</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-activity-feed">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-activity-feed" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Show Activity Feed</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-activity-feed-text-animation">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-activity-feed-text-animation" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Animate Activity Feed Text</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-panel-headers">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-panel-headers" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Show Panel Headers</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-enable-cache">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-enable-cache" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">Enable Results Caching</span>
+            <span class="fb-toggle-right">1h expiry</span>
+          </div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-theme-dark">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-theme-dark" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Dark Theme</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-textarea-inspect-overlay-enabled">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-textarea-inspect-overlay-enabled">
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text">
+            <span class="fb-toggle-label">Textarea Overlay</span>
+            <span class="fb-toggle-right fb-toggle-experimental">experimental</span>
+          </div>
+        </label>
+
+        <div class="fb-toggle-sub-item" id="textarea-overlay-sub-settings">
+          <label class="fb-toggle-row" for="toggle-textarea-inspect-overlay-default">
+            <span class="fishbowl-popup-toggle">
+              <input type="checkbox" id="toggle-textarea-inspect-overlay-default">
+              <span class="fishbowl-popup-toggle-box">[ ]</span>
+              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+            </span>
+            <div class="fb-toggle-text"><span class="fb-toggle-label">Show on page load</span></div>
+          </label>
+          <label class="fb-toggle-row" for="toggle-textarea-inspect-overlay-hold-to-show">
+            <span class="fishbowl-popup-toggle">
+              <input type="checkbox" id="toggle-textarea-inspect-overlay-hold-to-show">
+              <span class="fishbowl-popup-toggle-box">[ ]</span>
+              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+            </span>
+            <div class="fb-toggle-text"><span class="fb-toggle-label">Hold Ctrl+Shift to show overlays</span></div>
+          </label>
+        </div>
+
+        <div class="fb-opacity-row">
+          <span class="fb-opacity-label">Info panels opacity</span>
+          <input type="range" id="info-panel-opacity" min="0.05" max="1" step="0.05" value="0.35" class="fb-range">
+          <span id="info-panel-opacity-value" class="fb-opacity-value">0.35</span>
+        </div>
+      </section>
+
+    </div><!-- /settings-tab -->
+
+    <!-- ── Analysis tab ──────────────────────────────────── -->
+    <div id="analysis-tab" class="fishbowl-popup-tab-content">
+
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">IP Analysis</h3>
+        </header>
+
+        <label class="fb-toggle-row" for="toggle-service-virustotal">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-service-virustotal" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">VirusTotal</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-service-abuseipdb">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-service-abuseipdb" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">AbuseIPDB</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-service-ipinfo">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-service-ipinfo" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">IPinfo</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-service-spur">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-service-spur" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Spur</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-service-shodan">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-service-shodan">
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Shodan</span></div>
+        </label>
+      </section>
+
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Domain Analysis</h3>
+        </header>
+
+        <label class="fb-toggle-row" for="toggle-domain-service-virustotal">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-domain-service-virustotal" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">VirusTotal</span></div>
+        </label>
+      </section>
+
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Hash Analysis</h3>
+        </header>
+
+        <label class="fb-toggle-row" for="toggle-hash-service-virustotal">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-hash-service-virustotal" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">VirusTotal</span></div>
+        </label>
+
+        <label class="fb-toggle-row" for="toggle-hash-service-bazaar">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-hash-service-bazaar" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">MalwareBazaar</span></div>
+        </label>
+      </section>
+
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">File Analysis</h3>
+        </header>
+
+        <label class="fb-toggle-row" for="toggle-file-service-virustotal">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-file-service-virustotal" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">VirusTotal</span></div>
+        </label>
+      </section>
+
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">ASN Analysis</h3>
+        </header>
+
+        <label class="fb-toggle-row" for="toggle-asn-service-ipinfo">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-asn-service-ipinfo" checked>
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">IPinfo</span></div>
+        </label>
+      </section>
+
+    </div><!-- /analysis-tab -->
+
+    <!-- ── Activity Logs tab ─────────────────────────────── -->
+    <div id="activity-logs-tab" class="fishbowl-popup-tab-content">
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Activity Log</h3>
+          <button id="clear-logs" class="fb-pill-btn fb-pill-btn--ghost">Clear</button>
+        </header>
+        <div id="logs-list" class="fb-logs-list">
+          <p class="empty-logs-message fb-log-empty">No activity logs found</p>
+        </div>
+      </section>
+    </div><!-- /activity-logs-tab -->
+
+    <!-- ── Whitelist tab ─────────────────────────────────── -->
+    <div id="domain-whitelist-tab" class="fishbowl-popup-tab-content">
+
+      <!-- CSP Bypass -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">CSP Bypass</h3>
+        </header>
+        <p class="fb-card-desc">Allows the extension to send page data to your local backend even when the site's CSP blocks it. Only enable for trusted domains.</p>
+
+        <div class="fb-input-row">
+          <input type="text" id="csp-override-domain-input" placeholder="Enter domain or URL" class="fb-text-input">
+          <button id="csp-override-add-domain" class="fb-pill-btn fb-pill-btn--accent">+ Add</button>
+        </div>
+
+        <div class="fb-toggle-row-between">
+          <label class="fb-toggle-row" for="csp-override-toggle">
+            <span class="fishbowl-popup-toggle">
+              <input type="checkbox" id="csp-override-toggle">
+              <span class="fishbowl-popup-toggle-box">[ ]</span>
+              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+            </span>
+            <div class="fb-toggle-text">
+              <span class="fb-toggle-label">Bypass for current site:
+                <span id="csp-override-current-domain" class="fb-toggle-sub"></span>
+              </span>
+            </div>
+          </label>
+          <button id="clear-csp-override" class="fb-pill-btn fb-pill-btn--danger">Clear all</button>
+        </div>
+
+        <div id="csp-override-domain-preview" class="fb-domain-preview"></div>
+        <div id="csp-override-status" class="fb-list-status"></div>
+        <ul id="csp-override-domain-list" class="fb-domain-list"></ul>
+      </section>
+
+      <!-- Domain Whitelist -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Domain Whitelist</h3>
+        </header>
+        <p class="fb-card-desc">Only allow FishBowl on specific domains. By default it runs everywhere. Adding any domain restricts it to those domains.</p>
+
+        <div class="fb-input-row">
+          <input type="text" id="whitelist-domain-input" placeholder="Enter domain (e.g. example.com)" class="fb-text-input">
+          <button id="whitelist-add-domain" class="fb-pill-btn fb-pill-btn--accent">+ Add</button>
+        </div>
+
+        <div class="fb-toggle-row-between">
+          <label class="fb-toggle-row" for="whitelist-current-site-toggle">
+            <span class="fishbowl-popup-toggle">
+              <input type="checkbox" id="whitelist-current-site-toggle">
+              <span class="fishbowl-popup-toggle-box">[ ]</span>
+              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+            </span>
+            <div class="fb-toggle-text">
+              <span class="fb-toggle-label">Whitelist current site:
+                <span id="whitelist-current-domain" class="fb-toggle-sub"></span>
+              </span>
+            </div>
+          </label>
+          <button id="clear-whitelist" class="fb-pill-btn fb-pill-btn--danger">Clear all</button>
+        </div>
+
+        <div id="whitelist-domain-preview" class="fb-domain-preview"></div>
+        <div id="whitelist-status" class="fb-list-status"></div>
+        <ul id="whitelist-domain-list" class="fb-domain-list"></ul>
+      </section>
+
+    </div><!-- /domain-whitelist-tab -->
+
+    <!-- ── Debug tab ─────────────────────────────────────── -->
+    <div id="debug-tab" class="fishbowl-popup-tab-content">
+
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Execution Mode</h3>
+          <span id="debug-execution-mode-status" class="fb-card-meta"></span>
+        </header>
+        <p class="fb-card-desc">Trigger any FishBowl action from the keyboard or here.</p>
+        <div class="fb-debug-grid">
+          <button id="debug-toggle-execution-mode" class="fb-debug-btn">
+            <kbd class="fb-kbd">Z</kbd> Toggle execution mode
+          </button>
+          <button id="debug-exec-region-selection" class="fb-debug-btn">
+            <kbd class="fb-kbd">S</kbd> Region selection
+          </button>
+          <button id="debug-exec-rescan" class="fb-debug-btn">
+            <kbd class="fb-kbd">R</kbd> Rescan page
+          </button>
+          <button id="debug-exec-toggle-panels" class="fb-debug-btn">
+            <kbd class="fb-kbd">P</kbd> Toggle side panels
+          </button>
+          <button id="debug-exec-toggle-highlights" class="fb-debug-btn">
+            Toggle highlights
+          </button>
+          <button id="debug-exec-toggle-hud" class="fb-debug-btn">
+            <kbd class="fb-kbd">H</kbd> Hide HUD
+          </button>
+          <button id="debug-exec-reset-panels" class="fb-debug-btn">
+            <kbd class="fb-kbd">C</kbd> Reset panel positions
+          </button>
+          <button id="debug-exec-remount-overlay" class="fb-debug-btn">
+            <kbd class="fb-kbd">A</kbd> Remount overlay
+          </button>
+          <button id="debug-exec-toggle-theme" class="fb-debug-btn">
+            <kbd class="fb-kbd">T</kbd> Toggle theme
+          </button>
+          <button id="debug-exec-entity-search" class="fb-debug-btn">
+            <kbd class="fb-kbd">:</kbd> Search entities
+          </button>
+          <button id="debug-exec-cancel" class="fb-debug-btn">
+            <kbd class="fb-kbd">Esc</kbd> Cancel
+          </button>
+        </div>
+      </section>
+
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Cache</h3>
+        </header>
+        <div class="fb-card-row">
+          <button id="purge-cache" class="fb-pill-btn fb-pill-btn--ghost">Purge Cache</button>
+          <span class="fb-hint">Clear all cached analysis results</span>
+        </div>
+      </section>
+
+    </div><!-- /debug-tab -->
+
+  </div><!-- /fb-popup-body -->
+</div><!-- /fb-popup -->
+
+<script src="../js/h.js"></script>
+<script src="../js/constants.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/log-service.js"></script>
+<script src="../js/lifecycle.js"></script>
+<script src="../js/fishbowl-net.js"></script>
+<script src="../js/popup/domain-list.js"></script>
+<script src="../js/popup/settings-bridge.js"></script>
+<script src="../js/popup/activity-logs.js"></script>
+<script src="../js/popup/debug-controls.js"></script>
+<script src="../js/popup/panel-visibility.js"></script>
+<script src="../js/popup/pairing.js"></script>
+<script src="../js/popup/main.js"></script>
+</body>
+</html>

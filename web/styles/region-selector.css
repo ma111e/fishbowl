@@ -1,0 +1,144 @@
+/**
+ * FishBowl Security Extension - Region Selector Styles
+ * Includes execution mode and shortcuts hint styling
+ */
+
+.fishbowl-region-selector {
+  position: fixed;
+  background-color: var(--color-region-selector-bg);
+  border: 2px dashed var(--color-region-selector-border);
+  z-index: 9998;
+  pointer-events: none;
+  /* box-shadow: 0 0 10px oklch(0.0000 0.0000 0.00 / 0.1000); */
+}
+
+.fishbowl-region-selector-active {
+  cursor: crosshair !important;
+}
+
+.fishbowl-region-selection-hint {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-region-selection-hint-bg);
+  color: var(--color-region-selection-hint-text);
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  z-index: 9999;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Temporary highlight for elements in the selection region */
+.fishbowl-highlight.fishbowl-region-selected {
+  background-color: var(--color-region-selected-bg);
+  color: var(--color-region-selected-text);
+  z-index: 9000;
+  position: relative;
+  border-radius: 3px;
+  transition-property: none;
+}
+
+/* Temporary highlight for elements in the selection region */
+.fishbowl-theme-light .fishbowl-highlight.fishbowl-region-selected {
+  background: var(--color-highlight-selected-bg);
+  color: var(--color-highlight-selected-text);
+  z-index: 9000;
+  position: relative;
+  border-radius: 3px;
+  transition-property: none;
+}
+
+/* Apply smooth transition only when exiting selection mode */
+.fishbowl-highlight.fishbowl-region-selected.fishbowl-region-exiting {
+  /* transform: scale(1); */
+  /* border: 1px solid transparent; */
+  background-color: transparent !important;
+  border-color: transparent !important;
+  transition: all 0.3s ease-out;
+}
+
+/* Shortcuts hint panel */
+.fishbowl-shortcuts-hint {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: var(--color-shortcuts-hint-bg);
+  color: var(--color-shortcuts-hint-text);
+  border-radius: 8px;
+  border: 1px solid var(--color-shortcuts-hint-border);
+  z-index: 10000;
+  padding: 14px 16px;
+  font-family: 'CommitMono', monospace;
+  font-size: 13px;
+  max-width: 320px;
+  min-width: 250px;
+  pointer-events: none;
+  box-shadow: 0 8px 24px var(--color-popup-shadow);
+  /* Allow clicking through the hint */
+  animation: fishbowl-fade-in 0.3s ease-out;
+}
+
+.fishbowl-shortcuts-header {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-shortcuts-header-border);
+  color: var(--color-shortcuts-header-text);
+  text-align: left;
+}
+
+.fishbowl-shortcuts-hint ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fishbowl-shortcuts-hint li {
+  display: flex;
+  align-items: center;
+  color: var(--color-shortcuts-hint-text);
+}
+
+.fishbowl-shortcut-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-shortcut-key-bg);
+  color: var(--color-shortcuts-hint-text);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-right: 10px;
+  font-weight: bold;
+  min-width: 28px;
+  height: 22px;
+  line-height: 1;
+  text-align: center;
+  border: 1px solid var(--color-shortcut-key-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.fishbowl-shortcut-desc {
+  flex: 1;
+  color: var(--color-text-secondary);
+}
+
+@keyframes fishbowl-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
