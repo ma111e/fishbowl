@@ -5,9 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ma111e/fishbowl)](https://goreportcard.com/report/github.com/ma111e/fishbowl)
 
-Fishbowl is a browser-based threat-investigation toolkit. It detects security
-indicators on web pages, enriches them with threat intelligence, and visualizes
-relationships between entities in an interactive investigation workspace.
+Fishbowl is a browser-based threat-investigation toolkit. It flags security
+indicators on the pages you read and enriches them with threat intelligence.
+Drag those entities onto a graph to map how they connect.
 
 Page content is processed by a backend running on your machine and is not sent
 to a centralized Fishbowl service. When threat-intelligence enrichment is
@@ -50,15 +50,15 @@ fishbowl api register
 
 ## What it does
 
-- **Inline detection** — IPs, domains, hashes (SHA-1 and SHA-256), file paths,
+- **Inline detection.** IPs, domains, hashes (SHA-1 and SHA-256), file paths,
   Windows Event IDs, SIDs, and ASNs, including defanged input.
-- **Threat-intelligence enrichment** — query VirusTotal, AbuseIPDB, MalwareBazaar,
+- **Threat-intelligence enrichment.** Query VirusTotal, AbuseIPDB, MalwareBazaar,
   Shodan, IPinfo, and Spur.
-- **Investigation sandbox** — drag entities onto a graph, map relationships
+- **Investigation sandbox.** Drag entities onto a graph, map relationships
   across pages, and import or export investigations as JSON.
-- **Private, authenticated workflow** — process page content on your machine,
-  store API keys in an encrypted local vault, and authenticate extension-backend
-  traffic with signed requests and responses.
+- **Local and authenticated.** Page content is processed on your machine, API
+  keys live in an encrypted local vault, and extension-backend traffic is signed
+  on both ends.
 
 ## Documentation
 
@@ -76,7 +76,7 @@ Full documentation is available in the [documentation index](docs/README.md):
 
 ## Build from source
 
-Prerequisites: **Go** ≥ 1.25, **python3** and **zip** (web build), and **Node** 18+
+Prerequisites: **Go** 1.25+, **python3** and **zip** (web build), and **Node** 18+
 (`oxlint`).
 
 ```bash

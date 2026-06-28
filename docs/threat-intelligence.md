@@ -45,7 +45,7 @@ Scoring is per provider:
 - **VirusTotal**: by malicious-detection count: `0` → benign, `1-2` → neutral,
   `3-5` → suspicious, `>5` → malicious.
 - **AbuseIPDB**: by abuse-confidence score and report count: score `>50` or
-  `≥20` reports → malicious; score `>20` → suspicious.
+  `>=20` reports → malicious; score `>20` → suspicious.
 - **MalwareBazaar**: `malicious` if the hash is present in the dataset,
   otherwise `unknown` (not found).
 - **Spur**: `suspicious` when proxies or risk signals are present, otherwise

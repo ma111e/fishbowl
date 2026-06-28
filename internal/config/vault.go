@@ -377,14 +377,14 @@ func loadPayload() (vaultPayload, error) {
 	if err != nil {
 		return vaultPayload{}, err
 	}
-	blob, err := os.ReadFile(path)
-	if errors.Is(err, os.ErrNotExist) {
-		return vaultPayload{Entries: map[string]vaultEntry{}}, nil
-	}
-	if err != nil {
+	if err := requirePrivate(path); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return vaultPayload{Entries: map[string]vaultEntry{}}, nil
+		}
 		return vaultPayload{}, err
 	}
-	if err := requirePrivate(path); err != nil {
+	blob, err := os.ReadFile(path)
+	if err != nil {
 		return vaultPayload{}, err
 	}
 	if len(cached.kek) == 0 {
@@ -442,11 +442,11 @@ func LoadServerKey(fn func([]byte) error) error {
 	if err != nil {
 		return err
 	}
-	blob, err := os.ReadFile(path)
-	if err != nil {
+	if err := requirePrivate(path); err != nil {
 		return err
 	}
-	if err := requirePrivate(path); err != nil {
+	blob, err := os.ReadFile(path)
+	if err != nil {
 		return err
 	}
 	plain, err := decrypt(kek, blob)
