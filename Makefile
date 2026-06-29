@@ -7,7 +7,7 @@ assets:
 	mkdir -p internal/setup/assets
 	cp web/dist/fishbowl-chrome.zip internal/setup/assets/
 	cp web/dist/fishbowl-firefox.xpi internal/setup/assets/
-	cp web/icons/icon128.png internal/setup/assets/icon.png
+	cp web/icons/icon-128.png internal/setup/assets/icon.png
 
 # Stage the embedded assets, then compile the binary for Windows and Linux.
 release: assets
