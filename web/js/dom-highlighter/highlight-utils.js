@@ -201,7 +201,10 @@
                         description: event.description || '',
                         cssClass: 'event',
                         title: event.description || 'No description',
-                        cachedData: event.cachedData
+                        cachedData: event.cachedData,
+                        badges: (settings?.showEventDescriptions && event.description)
+                            ? ['eventdesc:' + event.description]
+                            : []
                     }
                 });
             });

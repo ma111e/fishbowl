@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Toggle element references ---
   const ipAddressesToggle = document.getElementById('toggle-ip-addresses');
   const eventIdsToggle = document.getElementById('toggle-event-ids');
+  const eventDescriptionsToggle = document.getElementById('toggle-event-descriptions');
   const sidsToggle = document.getElementById('toggle-sids');
   const asnToggle = document.getElementById('toggle-asn');
   const domainsToggle = document.getElementById('toggle-domains');
@@ -141,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Scanning toggles
     ipAddressesToggle.checked = settings.scanIpAddresses;
     eventIdsToggle.checked = settings.scanEventIds;
+    eventDescriptionsToggle.checked = !!settings.showEventDescriptions;
     sidsToggle.checked = settings.scanSids;
     asnToggle.checked = settings.scanAsn;
     domainsToggle.checked = settings.scanDomains;
@@ -335,6 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   eventIdsToggle.addEventListener('change', () => {
     settingsBridge.updateSetting('scanEventIds', eventIdsToggle.checked);
+  });
+
+  eventDescriptionsToggle.addEventListener('change', () => {
+    settingsBridge.updateSetting('showEventDescriptions', eventDescriptionsToggle.checked);
   });
 
   sidsToggle.addEventListener('change', () => {

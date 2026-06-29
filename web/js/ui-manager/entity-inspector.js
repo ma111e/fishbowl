@@ -315,7 +315,7 @@ class FishBowlEntityInspector {
             e.preventDefault();
             e.stopPropagation();
             const entity = this._entityByKey(this.selectedKey);
-            if (entity) this._search(entity);
+            if (entity && entity.type === 'ip') this._search(entity);
         }
     }
 
@@ -525,6 +525,33 @@ class FishBowlEntityInspector {
     }
 
     /**
+     * Resolve the service logo for a source key, the same way the selection
+     * panel and sandbox enrichment blocks do (FishBowlConsts.SHORTCUT_ICON_PATHS
+     * + browser.runtime.getURL). Returns an <img> element, or null when there is
+     * no mapped icon.
+     */
+    _serviceIcon(sourceKey) {
+        try {
+            const key = String(sourceKey || '').toLowerCase();
+            const iconPath = FishBowlConsts.SHORTCUT_ICON_PATHS[key];
+            if (!iconPath) return null;
+
+            const img = document.createElement('img');
+            img.className = 'fishbowl-inspector-source-icon';
+            img.alt = '';
+            img.setAttribute('aria-hidden', 'true');
+            img.src = iconPath.startsWith('http://') || iconPath.startsWith('https://')
+                ? iconPath
+                : browser.runtime.getURL(iconPath);
+            img.addEventListener('error', function () { this.style.display = 'none'; });
+            return img;
+        } catch (e) {
+            console.warn('[FishBowl EntityInspector] Failed to resolve service icon', e);
+            return null;
+        }
+    }
+
+    /**
      * Render a compact table of scalar fields from each enrichment source's
      * `details` object. Nested objects/arrays are summarized, not expanded.
      */
@@ -546,7 +573,11 @@ class FishBowlEntityInspector {
 
             const name = document.createElement('div');
             name.className = 'fishbowl-inspector-source-name';
-            name.textContent = sourceKey;
+            const icon = this._serviceIcon(sourceKey);
+            if (icon) name.appendChild(icon);
+            const nameText = document.createElement('span');
+            nameText.textContent = sourceKey;
+            name.appendChild(nameText);
             sourceEl.appendChild(name);
 
             for (const field of Object.keys(details)) {
@@ -704,13 +735,11 @@ class FishBowlEntityInspector {
         const actions = document.createElement('div');
         actions.className = 'fishbowl-inspector-actions';
 
-        const search = this._actionButton('Dashboard', () => this._search(entity));
-        const highlight = this._actionButton('Highlight on page', () => this._highlight(entity));
-        const copy = this._actionButton('Copy', () => this._copy(entity));
-
-        actions.appendChild(search);
-        actions.appendChild(highlight);
-        actions.appendChild(copy);
+        if (entity.type === 'ip') {
+            actions.appendChild(this._actionButton('Dashboard', () => this._search(entity)));
+        }
+        actions.appendChild(this._actionButton('Highlight on page', () => this._highlight(entity)));
+        actions.appendChild(this._actionButton('Copy', () => this._copy(entity)));
         return actions;
     }
 

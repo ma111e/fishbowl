@@ -204,6 +204,7 @@ class FishBowlBadgeManager {
 
         if (badgesArray.length === 0) return;
 
+        const descBadges = [];
         const vtBadges = [];
         const abuseIpdbBadges = [];
         const spurBadges = [];
@@ -213,6 +214,11 @@ class FishBowlBadgeManager {
         const otherBadges = [];
 
         badgesArray.forEach(badgeType => {
+            if (typeof badgeType === 'string' && badgeType.startsWith('eventdesc:')) {
+                descBadges.push(badgeType);
+                return;
+            }
+
             if (typeof badgeType === 'string' && badgeType.startsWith('vt:')) {
                 vtBadges.push(badgeType);
                 return;
@@ -246,12 +252,22 @@ class FishBowlBadgeManager {
             otherBadges.push(badgeType);
         });
 
-        const orderedBadges = [...vtBadges, ...abuseIpdbBadges, ...spurBadges, ...flagBadges, ...orgBadges, ...typeBadges, ...otherBadges];
+        const orderedBadges = [...descBadges, ...vtBadges, ...abuseIpdbBadges, ...spurBadges, ...flagBadges, ...orgBadges, ...typeBadges, ...otherBadges];
 
         const badgesContainer = document.createElement('span');
         badgesContainer.className = 'fishbowl-badges-container text-badges';
 
         orderedBadges.forEach(badgeType => {
+            if (typeof badgeType === 'string' && badgeType.startsWith('eventdesc:')) {
+                const desc = badgeType.slice('eventdesc:'.length);
+                const badgeSpan = document.createElement('span');
+                badgeSpan.className = 'fishbowl-text-badge fishbowl-event-desc-badge';
+                badgeSpan.title = desc;
+                badgeSpan.textContent = desc;
+                badgesContainer.appendChild(badgeSpan);
+                return;
+            }
+
             if (typeof badgeType === 'string' && badgeType.startsWith('vt:')) {
                 const badgeSpan = document.createElement('span');
                 badgeSpan.className = 'fishbowl-text-badge fishbowl-vt-badge';

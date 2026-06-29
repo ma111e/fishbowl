@@ -248,11 +248,21 @@
 }
 
 .fishbowl-inspector-source-name {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
     font-size: var(--t-sm);
     font-weight: 600;
     color: var(--fg-1);
     text-transform: capitalize;
     margin-bottom: var(--s-1);
+}
+
+.fishbowl-inspector-source-icon {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .fishbowl-inspector-source-row {

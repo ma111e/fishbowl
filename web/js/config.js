@@ -91,6 +91,7 @@ const FishBowlConfig = {
         scanDomains: true,
         scanHashes: true,
         scanFiles: true,
+        showEventDescriptions: false,
         textareaInspectOverlayEnabled: false,
         textareaInspectOverlayDefault: false,
         textareaInspectOverlayHoldToShow: false,
@@ -340,6 +341,10 @@ FishBowlConfig.validateSettings = function validateSettings(settings) {
     requireBool('scanDomains');
     requireBool('scanHashes');
     requireBool('scanFiles');
+    if (typeof settings.showEventDescriptions !== 'boolean') {
+        settings.showEventDescriptions = false;
+    }
+    requireBool('showEventDescriptions');
     if (typeof settings.textareaInspectOverlayEnabled !== 'boolean') {
         settings.textareaInspectOverlayEnabled = false;
     }
