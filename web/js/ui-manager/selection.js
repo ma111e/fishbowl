@@ -292,6 +292,7 @@ class FishBowlSelectionManager {
         <div class="selection-actions-panel-buttons">
           <button class="hint-button analyze-button" data-action="analyze-reputation" data-shortcut="z"><span class="shortcut-key">Z</span> Analyze</button>
           <button class="hint-button" data-action="entity-inspector" data-shortcut="e"><span class="shortcut-key">E</span> Inspector</button>
+          <button class="hint-button" data-action="goto" data-shortcut-shift="g"><span class="shortcut-key">⇧G</span> Go to</button>
           <button class="hint-button dashboard-button" data-action="dashboard" data-shortcut="d"><span class="shortcut-key">D</span> Dashboard</button>
           <button class="hint-button" data-action="google" data-shortcut="g"><span class="shortcut-key">G</span><img class="shortcut-icon" data-icon="google" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Google</button>
           <button class="hint-button" data-action="spur" data-shortcut="s"><span class="shortcut-key">S</span><img class="shortcut-icon" data-icon="spur" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Spur</button>
@@ -310,6 +311,7 @@ class FishBowlSelectionManager {
 <!--          <button class="hint-button dashboard-button" data-action="dashboard" data-shortcut="d"><span class="shortcut-key">D</span> Dashboard</button>-->
           <button class="hint-button analyze-button" data-action="analyze-reputation" data-shortcut="z"><span class="shortcut-key">Z</span> Analyze</button>
           <button class="hint-button" data-action="entity-inspector" data-shortcut="e"><span class="shortcut-key">E</span> Inspector</button>
+          <button class="hint-button" data-action="goto" data-shortcut-shift="g"><span class="shortcut-key">⇧G</span> Go to</button>
           <button class="hint-button" data-action="asn" data-shortcut="i"><span class="shortcut-key">I</span><img class="shortcut-icon" data-icon="ipinfo" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> IPinfo</button>
         </div>
       `;
@@ -318,14 +320,16 @@ class FishBowlSelectionManager {
         <div class="selection-actions-panel-buttons">
           <button class="hint-button" data-action="event-info" data-shortcut="i"><span class="shortcut-key">I</span><img class="shortcut-icon" data-icon="microsoft" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Event Info</button>
           <button class="hint-button" data-action="entity-inspector" data-shortcut="e"><span class="shortcut-key">E</span> Inspector</button>
+          <button class="hint-button" data-action="goto" data-shortcut-shift="g"><span class="shortcut-key">⇧G</span> Go to</button>
         </div>
       `;
         } else if (itemType === 'sid') {
             return `
         <div class="selection-actions-panel-buttons">
-          <button class="hint-button" data-action="sid-info" data-shortcut="i"><span class="shortcut-key">I</span><img class="shortcut-icon" data-icon="microsoft" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Well-known SIDs</button>       
+          <button class="hint-button" data-action="sid-info" data-shortcut="i"><span class="shortcut-key">I</span><img class="shortcut-icon" data-icon="microsoft" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Well-known SIDs</button>
           <button class="hint-button" data-action="google" data-shortcut="g"><span class="shortcut-key">G</span><img class="shortcut-icon" data-icon="google" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Google</button>
           <button class="hint-button" data-action="entity-inspector" data-shortcut="e"><span class="shortcut-key">E</span> Inspector</button>
+          <button class="hint-button" data-action="goto" data-shortcut-shift="g"><span class="shortcut-key">⇧G</span> Go to</button>
         </div>
       `;
         } else if (itemType === 'domain') {
@@ -334,6 +338,7 @@ class FishBowlSelectionManager {
 <!--          <button class="hint-button dashboard-button" data-action="dashboard" data-shortcut="d"><span class="shortcut-key">D</span> Dashboard</button>-->
           <button class="hint-button analyze-button" data-action="analyze-reputation" data-shortcut="z"><span class="shortcut-key">Z</span> Analyze</button>
           <button class="hint-button" data-action="entity-inspector" data-shortcut="e"><span class="shortcut-key">E</span> Inspector</button>
+          <button class="hint-button" data-action="goto" data-shortcut-shift="g"><span class="shortcut-key">⇧G</span> Go to</button>
           <button class="hint-button" data-action="google" data-shortcut="g"><span class="shortcut-key">G</span><img class="shortcut-icon" data-icon="google" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Google</button>
           <button class="hint-button" data-action="virustotal" data-shortcut="v"><span class="shortcut-key">V</span><img class="shortcut-icon" data-icon="virustotal" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> VirusTotal</button>
         </div>
@@ -347,6 +352,7 @@ class FishBowlSelectionManager {
         <div class="selection-actions-panel-buttons">
           <button class="hint-button analyze-button" data-action="analyze-reputation" data-shortcut="z"><span class="shortcut-key">Z</span> Analyze</button>
           <button class="hint-button" data-action="entity-inspector" data-shortcut="e"><span class="shortcut-key">E</span> Inspector</button>
+          <button class="hint-button" data-action="goto" data-shortcut-shift="g"><span class="shortcut-key">⇧G</span> Go to</button>
           <button class="hint-button" data-action="virustotal" data-shortcut="v"><span class="shortcut-key">V</span><img class="shortcut-icon" data-icon="virustotal" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> VirusTotal</button>
           ${bazaarBtn}
           <button class="hint-button" data-action="google" data-shortcut="g"><span class="shortcut-key">G</span><img class="shortcut-icon" data-icon="google" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Google</button>
@@ -357,6 +363,7 @@ class FishBowlSelectionManager {
         <div class="selection-actions-panel-buttons">
           <button class="hint-button analyze-button" data-action="analyze-reputation" data-shortcut="z"><span class="shortcut-key">Z</span> Analyze</button>
           <button class="hint-button" data-action="entity-inspector" data-shortcut="e"><span class="shortcut-key">E</span> Inspector</button>
+          <button class="hint-button" data-action="goto" data-shortcut-shift="g"><span class="shortcut-key">⇧G</span> Go to</button>
           <button class="hint-button" data-action="google" data-shortcut="g"><span class="shortcut-key">G</span><img class="shortcut-icon" data-icon="google" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> Google</button>
           <button class="hint-button" data-action="virustotal" data-shortcut="v"><span class="shortcut-key">V</span><img class="shortcut-icon" data-icon="virustotal" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> VirusTotal</button>
           <button class="hint-button" data-action="chatgpt" data-shortcut="l"><span class="shortcut-key">L</span><img class="shortcut-icon" data-icon="chatgpt" src="${iconPlaceholderSrc}" alt="" aria-hidden="true"/> ChatGPT</button>
@@ -396,6 +403,12 @@ class FishBowlSelectionManager {
 
         if (action === 'dashboard' || action === 'analyze-reputation') {
             this.clearSelection();
+        }
+
+        if (action === 'goto') {
+            const firstValue = uniqueValues[0];
+            if (firstValue) this.executeAction('goto', selectionType, firstValue);
+            return;
         }
 
         uniqueValues.forEach(value => {
@@ -507,6 +520,9 @@ class FishBowlSelectionManager {
                     window.FishBowlUiManager.openEntityInspector(entityType, value);
                 }
                 break; // opens the drawer directly; no url to navigate to
+            case 'goto':
+                this.scrollToHighlightedContent(entityType, value);
+                break; // scrolls to the on-page highlight; no url to navigate to
             default:
                 const service = FishBowlConfig.ALL_SERVICES.find(svc => svc.id === action);
                 if (service) {
@@ -687,6 +703,22 @@ class FishBowlSelectionManager {
             //TODO: set callingTabID in global settings cache ?? browser.tabs API is only available to background scripts
 
             const key = e.key.toLowerCase();
+
+            // Shift+G: "Go to" - scroll the page to the selected entity's highlight.
+            // Handled before the modifier early-return below since it intentionally uses Shift.
+            if (e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey && key === 'g') {
+                const selectionPanel = this.getRoot().querySelector('#selection-actions-panel');
+                if (!selectionPanel || this.selectedItems.length === 0 || isInputActive) return;
+                const button = selectionPanel.querySelector('button[data-action="goto"]');
+                if (button) {
+                    button.classList.add('shortcut-pressed');
+                    this.handleActionButtonClick('goto');
+                    setTimeout(() => button.classList.remove('shortcut-pressed'), 300);
+                    e.preventDefault();
+                }
+                return;
+            }
+
             const validShortcutKeys = ['d', 'v', 'a', 'x', 'n', 'z', 'i', 'w', 's', 'g', 'l', 'p', 'b', 'o', 'e'];
 
             if (!validShortcutKeys.includes(key) ||
