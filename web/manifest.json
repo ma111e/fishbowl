@@ -1,1 +1,174 @@
-manifest.firefox.json
+{
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:* https://localhost:*; frame-src https: http:; child-src https: http:; worker-src 'self';"
+  },
+  "name": "FishBowl",
+  "version": "0.2.0",
+  "description": "FishBowl HUD",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fishbowl@ma111e.fr",
+      "strict_min_version": "113.0"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "html/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "declarativeNetRequest",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "scripts": [
+      "js/browser-polyfill.min.js",
+      "js/constants.js",
+      "js/config.js",
+      "js/settings.js",
+      "js/contracts.js",
+      "js/log-service.js",
+      "js/fishbowl-net.js",
+      "js/fishbowl-broadcast.js",
+      "js/bg/message-router.js",
+      "js/bg/reputation/state.js",
+      "js/bg/reputation/services.js",
+      "js/bg/inject-tools.js",
+      "js/bg/reputation/shadow-dom-tools.js",
+      "js/bg/reputation/dom-extract.js",
+      "js/bg/reputation/tab-queue.js",
+      "js/bg/reputation/tab-lifecycle.js",
+      "js/bg/reputation/coordinator.js",
+      "js/bg/dnr-rules.js",
+      "js/bg/status-icon.js",
+      "js/bg/handlers/open-dashboard.js",
+      "js/bg/handlers/proxy-analyze-page.js",
+      "js/bg/handlers/get-extension-css-text.js",
+      "js/bg/handlers/bypass-csp.js",
+      "js/bg/handlers/analyze-reputation.js",
+      "js/bg/handlers/analyze-reputation-single.js",
+      "js/bg/handlers/dom-extracted.js",
+      "js/bg/handlers/sandbox-data.js",
+      "js/background.js"
+    ]
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "js/browser-polyfill.min.js",
+        "js/constants.js",
+        "js/config.js",
+        "js/settings.js",
+        "js/contracts.js",
+        "js/log-service.js",
+        "js/lifecycle.js",
+        "js/settings-sync.js",
+        "js/cache-service.js",
+        "js/api-service.js",
+        "js/anchored-fixed-layer.js",
+        "js/overlays/base-inspect-overlay.js",
+        "js/textarea-inspect-overlay.js",
+        "js/tinymce-inspect-overlay.js",
+        "js/dom-highlighter/badges.js",
+        "js/dom-highlighter/modal.js",
+        "js/dom-highlighter/gestures.js",
+        "js/dom-highlighter/highlight-utils.js",
+        "js/dom-highlighter/main.js",
+        "js/draggable-panels.js",
+        "js/activity-progress.js",
+        "js/ui-manager/activity-feed.js",
+        "js/ui-manager/selection.js",
+        "js/ui-manager/panels.js",
+        "js/ui-manager/execution.js",
+        "js/ui-manager/entity-search.js",
+        "js/ui-manager/entity-inspector.js",
+        "js/ui-manager/main.js",
+        "js/region-selector.js",
+        "js/service-page-wait.js",
+        "js/bg/reputation/shadow-dom-tools.js",
+        "js/shadow-dom-utils.js",
+        "js/hud-analysis.js",
+        "js/security-hud.js",
+        "content.js"
+      ],
+      "css": [
+        "styles/common.css",
+        "styles/badges.css",
+        "styles/modal.css",
+        "styles/highlights.css",
+        "styles/region-selector.css",
+        "styles/adaptive-colors.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "dashboard.html",
+        "js/dashboard.js",
+        "styles/dashboard.css",
+        "icons/*",
+        "styles/common.css",
+        "styles/hud.css",
+        "styles/activity-feed.css",
+        "styles/draggable-panels.css",
+        "styles/modal.css",
+        "styles/adaptive-colors.css",
+        "styles/region-selector.css",
+        "styles/entity-inspector.css",
+        "fonts/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "resources": [
+        "html/sandbox.html",
+        "js/constants.js",
+        "js/config.js",
+        "js/settings.js",
+        "js/contracts.js",
+        "js/log-service.js",
+        "js/lifecycle.js",
+        "js/browser-polyfill.min.js",
+        "js/sandbox/store.js",
+        "js/sandbox/layout.js",
+        "js/sandbox/main.js",
+        "js/sandbox/entity-blocks.js",
+        "js/sandbox/operations.js",
+        "js/sandbox/drag.js",
+        "js/sandbox/links.js",
+        "js/sandbox/viewport.js",
+        "styles/sandbox.css",
+        "styles/common.css",
+        "icons/*",
+        "fonts/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}

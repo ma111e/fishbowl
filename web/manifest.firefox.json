@@ -4,7 +4,7 @@
     "extension_pages": "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:* https://localhost:*; frame-src https: http:; child-src https: http:; worker-src 'self';"
   },
   "name": "FishBowl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "FishBowl HUD",
   "browser_specific_settings": {
     "gecko": {
