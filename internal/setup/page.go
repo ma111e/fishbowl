@@ -137,7 +137,7 @@ const pageHTML = `<!DOCTYPE html>
   }
   function markReady() {
     document.getElementById('status').classList.add('ok');
-    document.getElementById('statusText').textContent = '✓ Extension detected - backend running on localhost:7158. You’re all set!';
+    document.getElementById('statusText').textContent = '✓ Extension detected - backend running on localhost:7158.';
     document.getElementById('manualWrap').style.display = 'none';
     document.getElementById('doneHint').style.display = '';
   }

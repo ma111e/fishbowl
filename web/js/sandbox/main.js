@@ -1203,7 +1203,7 @@ else if (layout === 'force') await arrangeForce();
 
             onCopy: (val, btn) => {
                 SbOperations.copy(val);
-                setStatus('Copied!');
+                setStatus('Copied');
 
                 if (btn) {
                     const originalWidth = btn.offsetWidth;
