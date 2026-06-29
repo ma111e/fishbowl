@@ -238,13 +238,17 @@ function handleKeyDown(event) {
     }
 }
 
-async function isDomainWhitelisted() {
+async function isDomainAllowedToRun() {
     try {
         const settings = await FishBowlSettings.loadGlobal(browser.storage);
-        return FishBowlSettings.isHostAllowed(settings, window.location.hostname);
+        const host = window.location.hostname;
+        const isAllowed = FishBowlSettings.isHostAllowed(settings, host);
+        const isBlacklisted = FishBowlSettings.isHostBlacklisted(settings, host);
+        // Blacklist wins: a blacklisted domain is blocked even if whitelisted.
+        return isAllowed && !isBlacklisted;
 
     } catch (error) {
-        console.error('Error checking domain whitelist:', error);
+        console.error('Error checking domain policy:', error);
         return false;
     }
 }
@@ -276,10 +280,10 @@ async function initializeFishBowl() {
             return;
         }
 
-        // Check if current domain is whitelisted
-        const isDomainAllowed = await isDomainWhitelisted();
+        // Check if current domain is allowed by the whitelist/blacklist policy
+        const isDomainAllowed = await isDomainAllowedToRun();
 
-        // If domain is not whitelisted and whitelist is active, don't initialize
+        // If domain is blacklisted, or not whitelisted while a whitelist is active, don't initialize
         if (!isDomainAllowed) {
             return;
         }
@@ -434,6 +438,44 @@ async function initializeFishBowl() {
                                 run(() => {
                                     if (window.FishBowlUiManager && typeof window.FishBowlUiManager.openEntitySearch === 'function') {
                                         window.FishBowlUiManager.openEntitySearch();
+                                    }
+                                });
+                                break;
+
+                            case 'openSandbox':
+                                run(() => {
+                                    browser.runtime.sendMessage({ action: 'openSandbox' }).catch(() => { });
+                                });
+                                break;
+
+                            case 'newInvestigation':
+                                run(async () => {
+                                    const entities = collectEntitiesFromPage();
+                                    await browser.runtime.sendMessage({
+                                        action: 'importEntitiesToInvestigation',
+                                        investigationId: null, // force-create new
+                                        autoAddAnalyzed: true, // place analyzed entities on the canvas
+                                        name: `Investigation - ${window.location.hostname} ${new Date().toLocaleString()}`,
+                                        entities
+                                    }).catch(() => { });
+                                    browser.runtime.sendMessage({ action: 'openSandbox' }).catch(() => { });
+                                });
+                                break;
+
+                            case 'importPage':
+                                run(async () => {
+                                    const entities = collectEntitiesFromPage();
+                                    await browser.runtime.sendMessage({
+                                        action: 'importEntitiesToInvestigation',
+                                        entities
+                                    }).catch(() => { });
+                                });
+                                break;
+
+                            case 'entityInspector':
+                                run(() => {
+                                    if (window.FishBowlUiManager && typeof window.FishBowlUiManager.openEntityInspector === 'function') {
+                                        window.FishBowlUiManager.openEntityInspector();
                                     }
                                 });
                                 break;

@@ -70,8 +70,23 @@
             .some(domain => currentHost === domain || currentHost.endsWith(`.${domain}`));
     }
 
+    function isHostBlacklisted(settings, host) {
+        if (!settings.useDomainBlacklist || !Array.isArray(settings.domainBlacklist) || settings.domainBlacklist.length === 0) {
+            return false;
+        }
+
+        const currentHost = (host || '').toString().trim().toLowerCase();
+        if (!currentHost) return false;
+
+        return settings.domainBlacklist
+            .map(d => (d || '').toString().trim().toLowerCase())
+            .filter(Boolean)
+            .some(domain => currentHost === domain || currentHost.endsWith(`.${domain}`));
+    }
+
     root.FishBowlSettings = {
         isHostAllowed,
+        isHostBlacklisted,
         loadForHost,
         loadGlobal,
         normalize

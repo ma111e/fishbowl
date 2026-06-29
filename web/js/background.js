@@ -28,6 +28,7 @@ if (typeof importScripts === 'function') {
         'bg/reputation/tab-lifecycle.js',
         'bg/reputation/coordinator.js',
         'bg/dnr-rules.js',
+        'bg/status-icon.js',
         'bg/handlers/open-dashboard.js',
         'bg/handlers/proxy-analyze-page.js',
         'bg/handlers/get-extension-css-text.js',
@@ -86,15 +87,19 @@ async function probePairingState() {
         await FishBowlNet.ensureKeypair();
         await FishBowlNet.postJsonExpectJson(FishBowlConfig.PING_URL, {});
         // Success - no pairing required; fishbowl-net cleared the flag for us.
+        FishBowlBgStatusIcon?.apply('active');
     } catch (e) {
         if (e && e.needsPairing) {
+            FishBowlBgStatusIcon?.apply('pairing');
             // Directly spawn here in addition to relying on the storage listener:
             // storage.set fires onChanged even on no-op writes, but we want to be
             // robust even if the flag was already true (no transition).
             ensurePairWindow().catch(() => {});
+        } else {
+            // Backend offline/unreachable. Reflect it on the toolbar icon; we
+            // still don't surface a pair prompt for these errors.
+            FishBowlBgStatusIcon?.apply('offline');
         }
-        // Other errors (backend offline, etc.) are silently ignored - there's
-        // nothing useful to surface and we don't want spurious pair prompts.
     }
 }
 
@@ -168,6 +173,9 @@ browser.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local' || !('fishbowlNeedsPairing' in changes)) return;
     const { oldValue, newValue } = changes.fishbowlNeedsPairing;
     if (oldValue === newValue) return;
+    // Keep the toolbar icon in step with the flag transition (offline is only
+    // ever set via a probe; this listener only moves between active/pairing).
+    FishBowlBgStatusIcon?.apply(newValue === true ? 'pairing' : 'active');
     if (newValue === true)  ensurePairWindow().catch(() => {});
     if (newValue === false) {
         closePairWindow().catch(() => {});
@@ -332,3 +340,8 @@ try {
 } catch (e) {
     console.error('[FB:Background] Failed to start background initialization:', e);
 }
+
+// Probe once on background load so the toolbar icon reflects the current state
+// on service-worker spin-up (Chrome MV3 may restart the worker without firing
+// onStartup). probePairingState() dedups against the other triggers.
+probePairingState();

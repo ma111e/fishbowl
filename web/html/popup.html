@@ -12,16 +12,16 @@
   <header class="fb-popup-header">
     <div class="fb-popup-header-top">
       <span class="fb-popup-title">fishbowl</span>
-      <span class="fb-popup-status-pill" id="fb-status-pill">
+      <span class="fb-popup-status-pill is-checking" id="fb-status-pill">
         <span class="fb-popup-status-dot"></span>
-        ACTIVE
+        <span id="fb-status-text">CHECKING</span>
       </span>
     </div>
     <nav class="fb-popup-tabnav">
       <button class="fishbowl-popup-tab-button active" data-tab="settings">Settings</button>
       <button class="fishbowl-popup-tab-button" data-tab="analysis">Analysis</button>
       <button class="fishbowl-popup-tab-button" data-tab="activity-logs">Logs</button>
-      <button class="fishbowl-popup-tab-button" data-tab="domain-whitelist">Whitelist</button>
+      <button class="fishbowl-popup-tab-button" data-tab="policy">Policy</button>
       <button class="fishbowl-popup-tab-button" data-tab="debug">Debug</button>
     </nav>
   </header>
@@ -274,6 +274,7 @@
         </div>
       </section>
 
+      <!-- Data control -->
     </div><!-- /settings-tab -->
 
     <!-- ── Analysis tab ──────────────────────────────────── -->
@@ -414,41 +415,8 @@
       </section>
     </div><!-- /activity-logs-tab -->
 
-    <!-- ── Whitelist tab ─────────────────────────────────── -->
-    <div id="domain-whitelist-tab" class="fishbowl-popup-tab-content">
-
-      <!-- CSP Bypass -->
-      <section class="fb-card">
-        <header class="fb-card-header">
-          <h3 class="fb-card-title">CSP Bypass</h3>
-        </header>
-        <p class="fb-card-desc">Allows the extension to send page data to your local backend even when the site's CSP blocks it. Only enable for trusted domains.</p>
-
-        <div class="fb-input-row">
-          <input type="text" id="csp-override-domain-input" placeholder="Enter domain or URL" class="fb-text-input">
-          <button id="csp-override-add-domain" class="fb-pill-btn fb-pill-btn--accent">+ Add</button>
-        </div>
-
-        <div class="fb-toggle-row-between">
-          <label class="fb-toggle-row" for="csp-override-toggle">
-            <span class="fishbowl-popup-toggle">
-              <input type="checkbox" id="csp-override-toggle">
-              <span class="fishbowl-popup-toggle-box">[ ]</span>
-              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
-            </span>
-            <div class="fb-toggle-text">
-              <span class="fb-toggle-label">Bypass for current site:
-                <span id="csp-override-current-domain" class="fb-toggle-sub"></span>
-              </span>
-            </div>
-          </label>
-          <button id="clear-csp-override" class="fb-pill-btn fb-pill-btn--danger">Clear all</button>
-        </div>
-
-        <div id="csp-override-domain-preview" class="fb-domain-preview"></div>
-        <div id="csp-override-status" class="fb-list-status"></div>
-        <ul id="csp-override-domain-list" class="fb-domain-list"></ul>
-      </section>
+    <!-- ── Policy tab ────────────────────────────────────── -->
+    <div id="policy-tab" class="fishbowl-popup-tab-content">
 
       <!-- Domain Whitelist -->
       <section class="fb-card">
@@ -483,7 +451,90 @@
         <ul id="whitelist-domain-list" class="fb-domain-list"></ul>
       </section>
 
-    </div><!-- /domain-whitelist-tab -->
+      <!-- Domain Blacklist -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Domain Blacklist</h3>
+        </header>
+        <p class="fb-card-desc">Disable FishBowl entirely on these domains. Blacklisted domains are always blocked, even if they are also whitelisted.</p>
+
+        <div class="fb-input-row">
+          <input type="text" id="blacklist-domain-input" placeholder="Enter domain (e.g. example.com)" class="fb-text-input">
+          <button id="blacklist-add-domain" class="fb-pill-btn fb-pill-btn--accent">+ Add</button>
+        </div>
+
+        <div class="fb-toggle-row-between">
+          <label class="fb-toggle-row" for="blacklist-current-site-toggle">
+            <span class="fishbowl-popup-toggle">
+              <input type="checkbox" id="blacklist-current-site-toggle">
+              <span class="fishbowl-popup-toggle-box">[ ]</span>
+              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+            </span>
+            <div class="fb-toggle-text">
+              <span class="fb-toggle-label">Blacklist current site:
+                <span id="blacklist-current-domain" class="fb-toggle-sub"></span>
+              </span>
+            </div>
+          </label>
+          <button id="clear-blacklist" class="fb-pill-btn fb-pill-btn--danger">Clear all</button>
+        </div>
+
+        <div id="blacklist-domain-preview" class="fb-domain-preview"></div>
+        <div id="blacklist-status" class="fb-list-status"></div>
+        <ul id="blacklist-domain-list" class="fb-domain-list"></ul>
+      </section>
+
+      <!-- CSP Bypass -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">CSP Bypass</h3>
+        </header>
+        <p class="fb-card-desc">Allows the extension to send page data to your local backend even when the site's CSP blocks it. Only enable for trusted domains.</p>
+
+        <div class="fb-input-row">
+          <input type="text" id="csp-override-domain-input" placeholder="Enter domain or URL" class="fb-text-input">
+          <button id="csp-override-add-domain" class="fb-pill-btn fb-pill-btn--accent">+ Add</button>
+        </div>
+
+        <div class="fb-toggle-row-between">
+          <label class="fb-toggle-row" for="csp-override-toggle">
+            <span class="fishbowl-popup-toggle">
+              <input type="checkbox" id="csp-override-toggle">
+              <span class="fishbowl-popup-toggle-box">[ ]</span>
+              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+            </span>
+            <div class="fb-toggle-text">
+              <span class="fb-toggle-label">Bypass for current site:
+                <span id="csp-override-current-domain" class="fb-toggle-sub"></span>
+              </span>
+            </div>
+          </label>
+          <button id="clear-csp-override" class="fb-pill-btn fb-pill-btn--danger">Clear all</button>
+        </div>
+
+        <div id="csp-override-domain-preview" class="fb-domain-preview"></div>
+        <div id="csp-override-status" class="fb-list-status"></div>
+        <ul id="csp-override-domain-list" class="fb-domain-list"></ul>
+      </section>
+
+      <!-- Data control -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Data control</h3>
+        </header>
+        <p class="fb-card-desc">Ask for confirmation before sending a selected entity to an external AI service (ChatGPT, Perplexity), to avoid leaking private information.</p>
+
+        <label class="fb-toggle-row" for="toggle-confirm-ai-services">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-confirm-ai-services">
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Confirm before using AI services</span></div>
+        </label>
+      </section>
+
+    </div><!-- /policy-tab -->
 
     <!-- ── Debug tab ─────────────────────────────────────── -->
     <div id="debug-tab" class="fishbowl-popup-tab-content">
@@ -496,7 +547,7 @@
         <p class="fb-card-desc">Trigger any FishBowl action from the keyboard or here.</p>
         <div class="fb-debug-grid">
           <button id="debug-toggle-execution-mode" class="fb-debug-btn">
-            <kbd class="fb-kbd">Z</kbd> Toggle execution mode
+            <kbd class="fb-kbd">Ctrl</kbd>+<kbd class="fb-kbd">X</kbd> Toggle execution mode
           </button>
           <button id="debug-exec-region-selection" class="fb-debug-btn">
             <kbd class="fb-kbd">S</kbd> Region selection
@@ -507,14 +558,14 @@
           <button id="debug-exec-toggle-panels" class="fb-debug-btn">
             <kbd class="fb-kbd">P</kbd> Toggle side panels
           </button>
-          <button id="debug-exec-toggle-highlights" class="fb-debug-btn">
-            Toggle highlights
-          </button>
           <button id="debug-exec-toggle-hud" class="fb-debug-btn">
             <kbd class="fb-kbd">H</kbd> Hide HUD
           </button>
           <button id="debug-exec-reset-panels" class="fb-debug-btn">
             <kbd class="fb-kbd">C</kbd> Reset panel positions
+          </button>
+          <button id="debug-exec-textarea-overlays" class="fb-debug-btn">
+            <kbd class="fb-kbd">V</kbd> Toggle textarea overlays
           </button>
           <button id="debug-exec-remount-overlay" class="fb-debug-btn">
             <kbd class="fb-kbd">A</kbd> Remount overlay
@@ -522,8 +573,20 @@
           <button id="debug-exec-toggle-theme" class="fb-debug-btn">
             <kbd class="fb-kbd">T</kbd> Toggle theme
           </button>
+          <button id="debug-exec-open-sandbox" class="fb-debug-btn">
+            <kbd class="fb-kbd">O</kbd> Open sandbox
+          </button>
+          <button id="debug-exec-new-investigation" class="fb-debug-btn">
+            <kbd class="fb-kbd">N</kbd> New investigation
+          </button>
+          <button id="debug-exec-import-page" class="fb-debug-btn">
+            <kbd class="fb-kbd">I</kbd> Import page to sandbox
+          </button>
           <button id="debug-exec-entity-search" class="fb-debug-btn">
             <kbd class="fb-kbd">:</kbd> Search entities
+          </button>
+          <button id="debug-exec-entity-inspector" class="fb-debug-btn">
+            <kbd class="fb-kbd">E</kbd> Entity inspector
           </button>
           <button id="debug-exec-cancel" class="fb-debug-btn">
             <kbd class="fb-kbd">Esc</kbd> Cancel
@@ -558,6 +621,7 @@
 <script src="../js/popup/debug-controls.js"></script>
 <script src="../js/popup/panel-visibility.js"></script>
 <script src="../js/popup/pairing.js"></script>
+<script src="../js/popup/status-pill.js"></script>
 <script src="../js/popup/main.js"></script>
 </body>
 </html>

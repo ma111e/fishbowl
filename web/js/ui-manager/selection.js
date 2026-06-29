@@ -389,6 +389,20 @@ class FishBowlSelectionManager {
     });
 
     /**
+     * Actions that send the selected entity to an external third-party AI
+     * service. Gated behind the `confirmAiServices` setting.
+     */
+    static AI_SERVICE_ACTIONS = Object.freeze(['chatgpt', 'perplexity']);
+
+    /**
+     * Display names for AI-service actions, used in the confirmation disclaimer.
+     */
+    static AI_SERVICE_NAMES = Object.freeze({
+        chatgpt: 'ChatGPT',
+        perplexity: 'Perplexity',
+    });
+
+    /**
      * Handle action button clicks and open tabs for each selected item
      * @param {String} action The action type
      */
@@ -411,8 +425,140 @@ class FishBowlSelectionManager {
             return;
         }
 
-        uniqueValues.forEach(value => {
+        const dispatch = () => uniqueValues.forEach(value => {
             this.executeAction(action, selectionType, value);
+        });
+
+        if (FishBowlSelectionManager.AI_SERVICE_ACTIONS.includes(action)
+            && window.fishTankHUD?.settings?.confirmAiServices === true) {
+            this.confirmAiServiceAction(action, uniqueValues).then(confirmed => {
+                if (confirmed) dispatch();
+            });
+            return;
+        }
+
+        dispatch();
+    }
+
+    /**
+     * Show a confirmation modal before sending the selected entities to an
+     * external AI service. Resolves true if the user confirms, false otherwise.
+     * @param {String} action The AI-service action (e.g. 'chatgpt')
+     * @param {String[]} values The entity values about to be sent
+     * @returns {Promise<Boolean>}
+     */
+    confirmAiServiceAction(action, values) {
+        const root = this.getRoot();
+        const serviceName = FishBowlSelectionManager.AI_SERVICE_NAMES[action] || 'an AI service';
+        const safeValues = (values || []).map(v => (v || '').toString());
+
+        // Remove any stale confirm modal first.
+        const stale = root.querySelector('.fishbowl-modal-backdrop.fishbowl-confirm-backdrop');
+        if (stale) {
+            try { stale.remove(); } catch (e) { /* ignore */ }
+        }
+
+        return new Promise(resolve => {
+            let settled = false;
+            const finish = (result) => {
+                if (settled) return;
+                settled = true;
+                document.removeEventListener('keydown', onKeyDown, true);
+                backdrop.style.opacity = '0';
+                modal.style.transform = 'translateY(-150%)';
+                setTimeout(() => {
+                    try { backdrop.remove(); } catch (e) { /* ignore */ }
+                }, 300);
+                resolve(result);
+            };
+
+            const onKeyDown = (e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    finish(false);
+                }
+            };
+
+            const backdrop = document.createElement('div');
+            backdrop.className = 'fishbowl-modal-backdrop fishbowl-confirm-backdrop';
+            backdrop.style.opacity = '0';
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) finish(false);
+            });
+
+            const modal = document.createElement('div');
+            modal.className = 'fishbowl-modal fishbowl-confirm-modal';
+            modal.style.transform = 'translateY(-150%)';
+
+            const header = document.createElement('div');
+            header.className = 'fishbowl-modal-header';
+            const title = document.createElement('h2');
+            title.textContent = 'Send to AI service?';
+            header.appendChild(title);
+            modal.appendChild(header);
+
+            const content = document.createElement('div');
+            content.className = 'fishbowl-modal-content';
+
+            const disclaimer = document.createElement('p');
+            disclaimer.className = 'fishbowl-confirm-disclaimer';
+            const count = safeValues.length;
+            const subject = count === 1 ? 'the selected value' : `${count} selected values`;
+            disclaimer.textContent =
+                `${subject} will be sent to ${serviceName}, an external third-party AI service. `
+                + 'Make sure it contains no private, internal, or otherwise sensitive information '
+                + 'before continuing.';
+            content.appendChild(disclaimer);
+
+            if (count) {
+                const list = document.createElement('ul');
+                list.className = 'fishbowl-confirm-values';
+                safeValues.slice(0, 10).forEach(v => {
+                    const li = document.createElement('li');
+                    li.textContent = v;
+                    list.appendChild(li);
+                });
+                if (count > 10) {
+                    const li = document.createElement('li');
+                    li.textContent = `…and ${count - 10} more`;
+                    list.appendChild(li);
+                }
+                content.appendChild(list);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'fishbowl-confirm-actions';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'fishbowl-confirm-btn fishbowl-confirm-cancel';
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.addEventListener('click', () => finish(false));
+
+            const continueBtn = document.createElement('button');
+            continueBtn.type = 'button';
+            continueBtn.className = 'fishbowl-confirm-btn fishbowl-confirm-continue';
+            continueBtn.textContent = 'Continue';
+            continueBtn.addEventListener('click', () => finish(true));
+
+            actions.appendChild(cancelBtn);
+            actions.appendChild(continueBtn);
+            content.appendChild(actions);
+
+            modal.appendChild(content);
+            backdrop.appendChild(modal);
+            root.appendChild(backdrop);
+
+            document.addEventListener('keydown', onKeyDown, true);
+
+            // Trigger fade/slide-in transition.
+            void backdrop.offsetWidth;
+            backdrop.style.opacity = '1';
+            setTimeout(() => {
+                modal.style.transform = 'translateY(0)';
+                try { cancelBtn.focus(); } catch (e) { /* ignore */ }
+            }, 10);
         });
     }
 

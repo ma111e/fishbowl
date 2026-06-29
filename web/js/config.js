@@ -92,6 +92,7 @@ const FishBowlConfig = {
         scanHashes: true,
         scanFiles: true,
         showEventDescriptions: false,
+        confirmAiServices: false,
         textareaInspectOverlayEnabled: false,
         textareaInspectOverlayDefault: false,
         textareaInspectOverlayHoldToShow: false,
@@ -129,6 +130,8 @@ const FishBowlConfig = {
         theme: 'dark',
         domainWhitelist: [],
         useDomainWhitelist: false,
+        domainBlacklist: [],
+        useDomainBlacklist: false,
         cspBackendOverrideDomains: [],
         hudPanelPositionsByDomain: {},
         hudPanelVisibilityByDomain: {}
@@ -345,6 +348,10 @@ FishBowlConfig.validateSettings = function validateSettings(settings) {
         settings.showEventDescriptions = false;
     }
     requireBool('showEventDescriptions');
+    if (typeof settings.confirmAiServices !== 'boolean') {
+        settings.confirmAiServices = false;
+    }
+    requireBool('confirmAiServices');
     if (typeof settings.textareaInspectOverlayEnabled !== 'boolean') {
         settings.textareaInspectOverlayEnabled = false;
     }
@@ -362,9 +369,13 @@ FishBowlConfig.validateSettings = function validateSettings(settings) {
 
     requireBool('enableCache');
     requireBool('useDomainWhitelist');
+    requireBool('useDomainBlacklist');
 
     if (!Array.isArray(settings.domainWhitelist)) {
         throw new Error('Invalid settings: domainWhitelist must be an array');
+    }
+    if (!Array.isArray(settings.domainBlacklist)) {
+        throw new Error('Invalid settings: domainBlacklist must be an array');
     }
     if (!Array.isArray(settings.cspBackendOverrideDomains)) {
         throw new Error('Invalid settings: cspBackendOverrideDomains must be an array');

@@ -8,16 +8,20 @@ class FishBowlPopupDebugControls {
     this.unsupportedUrlPattern = /^(about:|chrome:|edge:|moz-extension:|chrome-extension:)/i;
 
     this.actionCommands = [
-      { buttonId: 'debug-exec-region-selection', command: 'regionSelection' },
-      { buttonId: 'debug-exec-rescan',           command: 'rescan' },
-      { buttonId: 'debug-exec-toggle-panels',    command: 'togglePanels' },
-      { buttonId: 'debug-exec-toggle-highlights', command: 'toggleHighlights' },
-      { buttonId: 'debug-exec-toggle-hud',       command: 'toggleHud' },
-      { buttonId: 'debug-exec-reset-panels',     command: 'resetPanelPositions' },
-      { buttonId: 'debug-exec-remount-overlay',  command: 'remountOverlay' },
-      { buttonId: 'debug-exec-toggle-theme',     command: 'toggleTheme' },
-      { buttonId: 'debug-exec-entity-search',    command: 'entitySearch' },
-      { buttonId: 'debug-exec-cancel',           command: 'cancel' }
+      { buttonId: 'debug-exec-region-selection',  command: 'regionSelection' },
+      { buttonId: 'debug-exec-rescan',            command: 'rescan' },
+      { buttonId: 'debug-exec-toggle-panels',     command: 'togglePanels' },
+      { buttonId: 'debug-exec-toggle-hud',        command: 'toggleHud' },
+      { buttonId: 'debug-exec-reset-panels',      command: 'resetPanelPositions' },
+      { buttonId: 'debug-exec-textarea-overlays', command: 'toggleTextareaOverlays' },
+      { buttonId: 'debug-exec-remount-overlay',   command: 'remountOverlay' },
+      { buttonId: 'debug-exec-toggle-theme',      command: 'toggleTheme' },
+      { buttonId: 'debug-exec-open-sandbox',      command: 'openSandbox' },
+      { buttonId: 'debug-exec-new-investigation', command: 'newInvestigation' },
+      { buttonId: 'debug-exec-import-page',       command: 'importPage' },
+      { buttonId: 'debug-exec-entity-search',     command: 'entitySearch' },
+      { buttonId: 'debug-exec-entity-inspector',  command: 'entityInspector' },
+      { buttonId: 'debug-exec-cancel',            command: 'cancel' }
     ];
   }
 

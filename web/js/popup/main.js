@@ -24,8 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     previewElementId: 'whitelist-domain-preview',
     currentSiteToggleId: 'whitelist-current-site-toggle',
     currentDomainLabelId: 'whitelist-current-domain',
+    addButtonId: 'whitelist-add-domain',
+    clearButtonId: 'clear-whitelist',
     settingsKey: 'domainWhitelist',
-    emptyStatusMessage: 'Add a domain to enable the whitelist, else the extension will run on all websites.',
+    emptyStatusMessage: '',
     activeStatusTemplate: 'Extension will only run on {count} whitelisted domain(s).',
     onAfterChange: (settings) => {
       if (!settings.domainWhitelist || settings.domainWhitelist.length === 0) {
@@ -44,6 +46,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const blacklistManager = new FishBowlPopupDomainList({
+    listElementId: 'blacklist-domain-list',
+    statusElementId: 'blacklist-status',
+    inputElementId: 'blacklist-domain-input',
+    previewElementId: 'blacklist-domain-preview',
+    currentSiteToggleId: 'blacklist-current-site-toggle',
+    currentDomainLabelId: 'blacklist-current-domain',
+    addButtonId: 'blacklist-add-domain',
+    clearButtonId: 'clear-blacklist',
+    settingsKey: 'domainBlacklist',
+    emptyStatusMessage: '',
+    activeStatusTemplate: 'Extension is disabled on {count} blacklisted domain(s).',
+    onAfterChange: (settings) => {
+      settings.useDomainBlacklist = Array.isArray(settings.domainBlacklist) && settings.domainBlacklist.length > 0;
+      browser.storage.local.set({ settings }, () => {
+        settingsBridge.broadcastSettingsUpdated(settings);
+        activityLogs.addLogEntry('info',
+          settings.domainBlacklist.length === 0
+            ? 'Domain blacklist cleared'
+            : `Domain blacklist updated (${settings.domainBlacklist.length} domains)`
+        );
+      });
+    }
+  });
+
   const cspOverrideManager = new FishBowlPopupDomainList({
     listElementId: 'csp-override-domain-list',
     statusElementId: 'csp-override-status',
@@ -51,8 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
     previewElementId: 'csp-override-domain-preview',
     currentSiteToggleId: 'csp-override-toggle',
     currentDomainLabelId: 'csp-override-current-domain',
+    addButtonId: 'csp-override-add-domain',
+    clearButtonId: 'clear-csp-override',
     settingsKey: 'cspBackendOverrideDomains',
-    emptyStatusMessage: 'Disabled by default. Add a domain to allow backend requests via background service worker proxy on CSP-restricted sites.',
+    emptyStatusMessage: '',
     activeStatusTemplate: 'Enabled for {count} domain(s).',
     onAfterChange: (settings) => {
       settingsBridge.broadcastSettingsUpdated(settings);
@@ -78,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ipAddressesToggle = document.getElementById('toggle-ip-addresses');
   const eventIdsToggle = document.getElementById('toggle-event-ids');
   const eventDescriptionsToggle = document.getElementById('toggle-event-descriptions');
+  const confirmAiServicesToggle = document.getElementById('toggle-confirm-ai-services');
   const sidsToggle = document.getElementById('toggle-sids');
   const asnToggle = document.getElementById('toggle-asn');
   const domainsToggle = document.getElementById('toggle-domains');
@@ -143,6 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ipAddressesToggle.checked = settings.scanIpAddresses;
     eventIdsToggle.checked = settings.scanEventIds;
     eventDescriptionsToggle.checked = !!settings.showEventDescriptions;
+    if (confirmAiServicesToggle) {
+      confirmAiServicesToggle.checked = !!settings.confirmAiServices;
+    }
     sidsToggle.checked = settings.scanSids;
     asnToggle.checked = settings.scanAsn;
     domainsToggle.checked = settings.scanDomains;
@@ -316,6 +349,10 @@ document.addEventListener('DOMContentLoaded', () => {
     whitelistManager.updateStatus(settings.domainWhitelist || []);
     whitelistManager.updateCurrentSiteSwitch(settings.domainWhitelist || []);
 
+    blacklistManager.populate(settings.domainBlacklist || []);
+    blacklistManager.updateStatus(settings.domainBlacklist || []);
+    blacklistManager.updateCurrentSiteSwitch(settings.domainBlacklist || []);
+
     cspOverrideManager.populate(settings.cspBackendOverrideDomains || []);
     cspOverrideManager.updateStatus(settings.cspBackendOverrideDomains || []);
     cspOverrideManager.updateCurrentSiteSwitch(settings.cspBackendOverrideDomains || []);
@@ -342,6 +379,12 @@ document.addEventListener('DOMContentLoaded', () => {
   eventDescriptionsToggle.addEventListener('change', () => {
     settingsBridge.updateSetting('showEventDescriptions', eventDescriptionsToggle.checked);
   });
+
+  if (confirmAiServicesToggle) {
+    confirmAiServicesToggle.addEventListener('change', () => {
+      settingsBridge.updateSetting('confirmAiServices', confirmAiServicesToggle.checked);
+    });
+  }
 
   sidsToggle.addEventListener('change', () => {
     settingsBridge.updateSetting('scanSids', sidsToggle.checked);
@@ -552,8 +595,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Domain list event listeners ---
   whitelistManager.initEventListeners();
+  blacklistManager.initEventListeners();
   cspOverrideManager.initEventListeners();
 
   whitelistManager.updatePreview();
+  blacklistManager.updatePreview();
   cspOverrideManager.updatePreview();
 });

@@ -11,34 +11,20 @@ To register keys or switch unlock modes, see [API Keys](api-keys.md) and the
 
 ## At a glance
 
-| Purpose | Primitive | Source |
-|---|---|---|
-| Secret encryption at rest | AES-256-GCM, 96-bit random nonce per message | `internal/config/envelope.go` |
-| Key-encryption-key (KEK) derivation | Argon2id | `internal/config/kdf.go` |
-| Vault lifecycle, modes, file guards | n/a | `internal/config/vault.go` |
-| Request/response authentication | ECDSA P-256 / SHA-256 (IEEE P1363) | `internal/api/auth.go`, `web/js/fishbowl-net.js` |
-| Extension enrollment | 6-digit pairing code, `crypto/rand`, constant-time compare | `internal/pairing/pairing.go` |
-| Randomness | `crypto/rand` (Go) / `crypto.getRandomValues` via WebCrypto (extension) | n/a |
+| Purpose | Primitive | Why this one | Source |
+|---|---|---|---|
+| Secret encryption at rest | AES-256-GCM, 96-bit random nonce per message | Encrypts each secret and stamps it with an auth tag, so a tampered or wrong-key file is refused instead of read back wrong. | `internal/config/envelope.go` |
+| Key-encryption-key (KEK) derivation | Argon2id | Deliberately slow and memory-hard, so guessing a passphrase by brute force stays too expensive to be worth it. | `internal/config/kdf.go` |
+| Wrong-key detection on unlock | Sealed canary string in `vault.json` | One known value is unsealed first; if that fails the key is wrong and no real secret is ever opened. | `internal/config/vault.go` |
+| Machine/user binding | Seed file + user id (plus machine-id on Linux) mixed into the KEK | Copy the files to another host or user and the key can't be rebuilt, so the copies are useless. | `internal/config/kdf.go` |
+| Vault lifecycle, modes, file guards | n/a | Enforces `0600`/`0700` ownership and atomic writes around the sealed files. | `internal/config/vault.go` |
+| Request authentication | ECDSA P-256 / SHA-256 signatures (IEEE P1363) | Each side holds a private key it never shares, so only the paired extension can produce a valid signature; no shared password to steal. | `internal/api/auth.go`, `web/js/fishbowl-net.js` |
+| Replay protection | Request timestamp + one-time nonce cache | A request is accepted once and only within 30 seconds, so a captured request is rejected the second time. | `internal/api/auth.go` |
+| Backend authentication | Response signing + trust-on-first-use key pinning | The backend signs its replies and the extension pins the first key it sees; a changed key raises a possible-MITM warning. | `internal/api/auth.go`, `web/js/fishbowl-net.js` |
+| Extension enrollment | 6-digit pairing code, `crypto/rand`, constant-time compare | Random so it can't be guessed, single-use, and compared in constant time so timing can't leak it. | `internal/pairing/pairing.go` |
+| Randomness | `crypto/rand` (Go) / `crypto.getRandomValues` (extension) | The OS secure random source for every key, nonce, and code; never `math/rand`. | n/a |
 
-Keys and nonces come from `crypto/rand` (or WebCrypto in the extension). There
-are no hard-coded keys, and `math/rand` is never used for secrets.
-
-## Why these tools
-
-If you're new to this, here is what each piece is doing and why it was picked.
-Every row maps a need to the tool that meets it.
-
-| Need | Tool | Why this one |
-|---|---|---|
-| Keep provider keys unreadable on disk | AES-256-GCM | Encrypts the keys and stamps each file with a check value, so a file that was edited or corrupted is refused instead of read back wrong. |
-| Turn a seed or passphrase into the encryption key | Argon2id | Built to be slow and memory-heavy on purpose, so guessing a passphrase by trying millions of options stays too expensive to be worth it. |
-| Notice a wrong passphrase or swapped seed before touching secrets | A small sealed test value in `vault.json` | Fishbowl tries to unseal one known string first; if that fails, the key is wrong and no real secret is ever opened. |
-| Tie the encrypted files to this machine and user | The seed file and your user id, plus the machine id on Linux, all fed into the key | Copy the files to another computer or user and the key can't be rebuilt, so the copies are useless. |
-| Prove a request really came from the paired extension | ECDSA P-256 signatures | Each side has its own private key it never shares; only the real extension can produce a signature that checks out, so there's no shared password to steal. |
-| Stop someone from recording a request and resending it | A timestamp plus a one-time check | A request is accepted once and only within 30 seconds, so a copied request is rejected the second time. |
-| Let the extension spot a fake backend | The backend signs its replies, and the extension remembers the first key it saw | If the reply key ever changes, the extension warns that something may be impersonating the backend. |
-| Hand out a safe one-time code for pairing | A random 6-digit code, compared carefully | The code is random so it can't be guessed, and the comparison takes the same time whether it's right or wrong, so timing can't leak it. |
-| Make every key, code, and random value unpredictable | The operating system's secure random source | Uses the strong randomness meant for security, never the ordinary random numbers used for things like shuffling. |
+There are no hard-coded keys, and `math/rand` is never used for secrets.
 
 ## File layout & locations
 

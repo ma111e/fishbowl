@@ -13,18 +13,18 @@
     }
   },
   "icons": {
-    "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   },
   "action": {
     "default_popup": "html/popup.html",
     "default_icon": {
-      "16": "icons/icon16.png",
-      "32": "icons/icon32.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
     }
   },
   "permissions": [
@@ -54,6 +54,7 @@
       "js/bg/reputation/tab-lifecycle.js",
       "js/bg/reputation/coordinator.js",
       "js/bg/dnr-rules.js",
+      "js/bg/status-icon.js",
       "js/bg/handlers/open-dashboard.js",
       "js/bg/handlers/proxy-analyze-page.js",
       "js/bg/handlers/get-extension-css-text.js",

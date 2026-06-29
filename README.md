@@ -9,10 +9,6 @@ Fishbowl is a browser-based threat-investigation toolkit. It flags security
 indicators on the pages you read and enriches them with threat intelligence.
 Drag those entities onto a graph to map how they connect.
 
-Page content is processed by a backend running on your machine and is not sent
-to a centralized Fishbowl service. When threat-intelligence enrichment is
-enabled, detected indicators may be sent to the selected third-party providers.
-
 Fishbowl supports Chrome, Chromium-based browsers such as Edge, Brave, and
 Opera, and Firefox.
 

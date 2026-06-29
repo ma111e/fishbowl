@@ -47,6 +47,7 @@ body {
 }
 
 .fb-popup-status-pill {
+  --status-color: var(--c-ok);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -59,12 +60,17 @@ body {
   border-radius: 999px;
 }
 
+.fb-popup-status-pill.is-active   { --status-color: var(--c-ok); }
+.fb-popup-status-pill.is-pairing  { --status-color: var(--c-warn); }
+.fb-popup-status-pill.is-offline  { --status-color: var(--c-danger); }
+.fb-popup-status-pill.is-checking { --status-color: var(--fg-3); }
+
 .fb-popup-status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--c-ok);
-  box-shadow: 0 0 6px var(--c-ok);
+  background: var(--status-color);
+  box-shadow: 0 0 6px var(--status-color);
   flex-shrink: 0;
 }
 

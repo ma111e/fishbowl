@@ -11,6 +11,8 @@ class FishBowlPopupDomainList {
     this.previewElementId = opts.previewElementId;
     this.currentSiteToggleId = opts.currentSiteToggleId;
     this.currentDomainLabelId = opts.currentDomainLabelId;
+    this.addButtonId = opts.addButtonId;
+    this.clearButtonId = opts.clearButtonId;
     this.settingsKey = opts.settingsKey;
     this.emptyStatusMessage = opts.emptyStatusMessage || 'No domains configured.';
     this.activeStatusTemplate = opts.activeStatusTemplate || 'Enabled for {count} domain(s).';
@@ -226,8 +228,11 @@ class FishBowlPopupDomainList {
   }
 
   _findAddButton() {
-    // Convention: add button id is derived from input id by replacing '-input' with '-add-domain'
-    // or for whitelist: 'whitelist-add-domain', csp: 'csp-override-add-domain'
+    if (this.addButtonId) {
+      const byId = document.getElementById(this.addButtonId);
+      if (byId) return byId;
+    }
+    // Fallback: legacy convention based on a wrapping input group
     const input = document.getElementById(this.inputElementId);
     if (!input) return null;
     const parent = input.closest('.fishbowl-popup-whitelist-domain-input-group');
@@ -235,6 +240,11 @@ class FishBowlPopupDomainList {
   }
 
   _findClearButton() {
+    if (this.clearButtonId) {
+      const byId = document.getElementById(this.clearButtonId);
+      if (byId) return byId;
+    }
+    // Fallback: legacy convention based on a wrapping list container
     const list = document.getElementById(this.listElementId);
     if (!list) return null;
     const container = list.closest('.fishbowl-popup-whitelist-list-container');
