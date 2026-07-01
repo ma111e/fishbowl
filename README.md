@@ -68,6 +68,7 @@ Full documentation is available in the [documentation index](docs/README.md):
 - [Interface](docs/interface.md) |
   [Keyboard Shortcuts](docs/keyboard-shortcuts.md)
 - [CLI Reference](docs/cli-reference.md) |
+  [Vault Cryptography](docs/vault-cryptography.md) |
   [Troubleshooting](docs/troubleshooting.md) | [FAQ](docs/faq.md)
 
 ## Build from source
