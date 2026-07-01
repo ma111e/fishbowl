@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -177,12 +178,13 @@ func analyzeShodanAPI(ip string, apiKey []byte) models.VerdictResult {
 		result.Details["vulns"] = cves
 	}
 
-	log.WithFields(log.Fields{
-		"ip":     ip,
+	log.WithFields(logsafe.Fields(log.Fields{
 		"source": SOURCE_SHODAN,
 		"ports":  len(host.Ports),
 		"vulns":  len(parseShodanVulns(host.Vulns)),
-	}).Info("Shodan API analysis complete")
+	}, log.Fields{
+		"ip": ip,
+	})).Info("Shodan API analysis complete")
 
 	return result
 }

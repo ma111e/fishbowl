@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -150,12 +151,13 @@ func analyzeAbuseIPDBAPI(ip string, apiKey []byte) models.VerdictResult {
 		result.Details["isTor"] = true
 	}
 
-	log.WithFields(log.Fields{
-		"ip":      ip,
+	log.WithFields(logsafe.Fields(log.Fields{
 		"source":  SOURCE_ABUSEIPDB,
 		"verdict": result.Verdict,
 		"score":   d.AbuseConfidenceScore,
-	}).Info("AbuseIPDB API analysis complete")
+	}, log.Fields{
+		"ip": ip,
+	})).Info("AbuseIPDB API analysis complete")
 
 	return result
 }
@@ -171,11 +173,12 @@ func analyzeAbuseIPDBContent(ip string, content string) models.VerdictResult {
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_ABUSEIPDB,
-		}).Error("Failed to parse HTML content")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to parse HTML content")
 		return result
 	}
 

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,42 +22,46 @@ func analyzeWhoisContent(ip string, content string) models.VerdictResult {
 	// Parse the HTML content
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_WHOIS,
-		}).Error("Failed to parse HTML content")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to parse HTML content")
 		return result
 	}
 
 	// Find the raw WHOIS block div with class "raw well well-sm"
 	rawWhoisBlock := doc.Find(".raw.well.well-sm").First()
 	if rawWhoisBlock.Length() == 0 {
-		log.WithFields(log.Fields{
-			"ip":     ip,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_WHOIS,
-		}).Error("WHOIS block not found")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("WHOIS block not found")
 		return result
 	}
 
 	// Get the HTML content of the first block
 	whoisHTML, err := rawWhoisBlock.Html()
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_WHOIS,
-		}).Error("Failed to extract WHOIS HTML")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to extract WHOIS HTML")
 		return result
 	}
 
 	// Split by double <br> tags to get the first block
 	blocks := strings.Split(whoisHTML, "<br><br>")
 	if len(blocks) == 0 {
-		log.WithFields(log.Fields{
-			"ip":     ip,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_WHOIS,
-		}).Error("No WHOIS blocks found")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("No WHOIS blocks found")
 		return result
 	}
 
@@ -65,11 +70,12 @@ func analyzeWhoisContent(ip string, content string) models.VerdictResult {
 	// Create a new document for just this block
 	blockDoc, err := goquery.NewDocumentFromReader(strings.NewReader(firstBlock))
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_WHOIS,
-		}).Error("Failed to parse first block")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to parse first block")
 		return result
 	}
 

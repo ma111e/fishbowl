@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -141,10 +142,11 @@ func analyzeVirusTotalAPI(value, entityType string, apiKey []byte) models.Verdic
 		} else {
 			result.Details["error"] = "http_404"
 		}
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_VIRUSTOTAL,
-			"value":  v,
-		}).Info("VirusTotal API: resource not found")
+		}, log.Fields{
+			"value": v,
+		})).Info("VirusTotal API: resource not found")
 		return result
 	}
 
@@ -232,12 +234,13 @@ func analyzeVirusTotalAPI(value, entityType string, apiKey []byte) models.Verdic
 		}
 	}
 
-	log.WithFields(log.Fields{
-		"value":   v,
+	log.WithFields(logsafe.Fields(log.Fields{
 		"source":  SOURCE_VIRUSTOTAL,
 		"verdict": result.Verdict,
 		"score":   fmt.Sprintf("%d/%d", stats.Malicious, total),
-	}).Info("VirusTotal API analysis complete")
+	}, log.Fields{
+		"value": v,
+	})).Info("VirusTotal API analysis complete")
 
 	return result
 }
@@ -269,29 +272,32 @@ func analyzeVirusTotalContent(ip string, content string) models.VerdictResult {
 		Details: make(map[string]interface{}),
 	}
 
-	log.WithFields(log.Fields{
-		"ip":             ip,
+	log.WithFields(logsafe.Fields(log.Fields{
 		"source":         SOURCE_VIRUSTOTAL,
 		"content_length": len(content),
-	}).Info("VirusTotal parser received content")
+	}, log.Fields{
+		"ip": ip,
+	})).Info("VirusTotal parser received content")
 
 	trimmed := strings.TrimSpace(content)
 	if trimmed == "" {
 		result.Details["error"] = "empty_content"
-		log.WithFields(log.Fields{
-			"ip":     ip,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_VIRUSTOTAL,
-		}).Warn("VirusTotal parser received empty content")
+		}, log.Fields{
+			"ip": ip,
+		})).Warn("VirusTotal parser received empty content")
 		return result
 	}
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_VIRUSTOTAL,
-		}).Error("Failed to parse HTML content")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to parse HTML content")
 		return result
 	}
 
@@ -309,10 +315,11 @@ func analyzeVirusTotalContent(ip string, content string) models.VerdictResult {
 	})
 	if tryNewSearchFound {
 		result.Details["error"] = "try_new_search_prompt"
-		log.WithFields(log.Fields{
-			"ip":     ip,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_VIRUSTOTAL,
-		}).Warn("VirusTotal parser encountered 'try a new search' prompt")
+		}, log.Fields{
+			"ip": ip,
+		})).Warn("VirusTotal parser encountered 'try a new search' prompt")
 		return result
 	}
 
@@ -483,14 +490,15 @@ func analyzeVirusTotalContent(ip string, content string) models.VerdictResult {
 		}
 
 		result.Verdict = setVerdictFromDetections(detected)
-		log.WithFields(log.Fields{
-			"ip":       ip,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source":   SOURCE_VIRUSTOTAL,
 			"detected": detected,
 			"total":    total,
 			"ratio":    ratio,
 			"verdict":  result.Verdict,
-		}).Info("VirusTotal parser extracted detection ratio")
+		}, log.Fields{
+			"ip": ip,
+		})).Info("VirusTotal parser extracted detection ratio")
 
 		result.Details["engineResults"] = map[string]interface{}{
 			"score":    strconv.Itoa(detected) + "/" + strconv.Itoa(total),

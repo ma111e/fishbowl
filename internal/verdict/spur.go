@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -47,11 +48,12 @@ func analyzeSpurContent(ip string, content string) models.VerdictResult {
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_SPUR,
-		}).Error("Failed to parse HTML content")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to parse HTML content")
 		return result
 	}
 
@@ -65,20 +67,22 @@ func analyzeSpurContent(ip string, content string) models.VerdictResult {
 	})
 
 	if preText == "" {
-		log.WithFields(log.Fields{
-			"ip":     ip,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_SPUR,
-		}).Warn("No JSON <pre> block found on Spur page")
+		}, log.Fields{
+			"ip": ip,
+		})).Warn("No JSON <pre> block found on Spur page")
 		return result
 	}
 
 	var data spurData
 	if err := json.Unmarshal([]byte(preText), &data); err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_SPUR,
-		}).Error("Failed to parse Spur JSON")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to parse Spur JSON")
 		return result
 	}
 
@@ -152,12 +156,13 @@ func analyzeSpurContent(ip string, content string) models.VerdictResult {
 		result.Verdict = "neutral"
 	}
 
-	log.WithFields(log.Fields{
-		"ip":      ip,
+	log.WithFields(logsafe.Fields(log.Fields{
 		"source":  SOURCE_SPUR,
 		"verdict": result.Verdict,
 		"details": result.Details,
-	}).Info("Spur analysis complete")
+	}, log.Fields{
+		"ip": ip,
+	})).Info("Spur analysis complete")
 
 	return result
 }

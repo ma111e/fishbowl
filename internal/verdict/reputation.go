@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ma111e/fishbowl/internal/config"
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -121,17 +122,19 @@ var reputationParsers = map[reputationParserKey]reputationParser{
 func AnalyzeReputation(value string, entityType string, source string, domContent string) models.VerdictResult {
 	t := strings.TrimSpace(strings.ToLower(entityType))
 	if t == "" {
-		log.WithFields(log.Fields{
-			"value":  value,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": source,
-		}).Warn("Missing entityType for reputation analysis")
+		}, log.Fields{
+			"value": value,
+		})).Warn("Missing entityType for reputation analysis")
 	}
 
-	log.WithFields(log.Fields{
-		"value":       value,
+	log.WithFields(logsafe.Fields(log.Fields{
 		"entity_type": t,
 		"source":      source,
-	}).Info("Analyzing for reputation")
+	}, log.Fields{
+		"value": value,
+	})).Info("Analyzing for reputation")
 
 	src := strings.TrimSpace(strings.ToLower(source))
 	request := reputationRequest{

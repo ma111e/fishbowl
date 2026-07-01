@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -103,10 +104,11 @@ func analyzeBazaarAPI(value string, apiKey []byte) models.VerdictResult {
 	case "hash_not_found":
 		result.Verdict = "unknown"
 		result.Details["status"] = "not_found"
-		log.WithFields(log.Fields{
-			"value":  value,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_BAZAAR,
-		}).Info("Hash not found in MalwareBazaar")
+		}, log.Fields{
+			"value": value,
+		})).Info("Hash not found in MalwareBazaar")
 		return result
 
 	case "illegal_hash":
@@ -181,11 +183,12 @@ func analyzeBazaarAPI(value string, apiKey []byte) models.VerdictResult {
 		result.Details["tags"] = sample.Tags
 	}
 
-	log.WithFields(log.Fields{
-		"value":   value,
+	log.WithFields(logsafe.Fields(log.Fields{
 		"source":  SOURCE_BAZAAR,
 		"verdict": result.Verdict,
-	}).Info("Bazaar API analysis complete")
+	}, log.Fields{
+		"value": value,
+	})).Info("Bazaar API analysis complete")
 
 	return result
 }

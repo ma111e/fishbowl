@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ma111e/fishbowl/internal/logsafe"
 	"github.com/ma111e/fishbowl/internal/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,11 +22,12 @@ func analyzeIpinfoContent(ip string, content string) models.VerdictResult {
 	// Parse the HTML content
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(content))
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logsafe.Fields(log.Fields{
 			"error":  err,
-			"ip":     ip,
 			"source": SOURCE_IPINFO,
-		}).Error("Failed to parse HTML content")
+		}, log.Fields{
+			"ip": ip,
+		})).Error("Failed to parse HTML content")
 		return result
 	}
 
@@ -93,11 +95,12 @@ func parseTags(doc *goquery.Document, result *models.VerdictResult) {
 
 	// Log the tags we found
 	if tags, exists := result.Details["tags"]; exists && len(tags.([]string)) > 0 {
-		log.WithFields(log.Fields{
-			"ip":     result.IP,
+		log.WithFields(logsafe.Fields(log.Fields{
 			"source": SOURCE_IPINFO,
 			"tags":   tags,
-		}).Info("Extracted Ipinfo tags")
+		}, log.Fields{
+			"ip": result.IP,
+		})).Info("Extracted Ipinfo tags")
 	}
 }
 
