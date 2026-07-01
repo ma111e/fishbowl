@@ -498,6 +498,7 @@
         const block = document.createElement('div');
         block.className = 'sb-block sb-block-enrichment';
         block.dataset.enrichmentId = enrichment.id;
+        if (enrichment.parentId) block.dataset.parentId = enrichment.parentId;
         block.style.left = `${enrichment.x || position.x}px`;
         block.style.top = `${enrichment.y || position.y}px`;
 

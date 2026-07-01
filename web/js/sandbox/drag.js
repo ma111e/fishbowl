@@ -36,6 +36,24 @@
         let startMouseX, startMouseY;
         let draggingBlocks = [];
         let isDragging = false;
+        let groupMove = false;
+
+        /**
+         * Gather an entity block together with its linked service (enrichment)
+         * blocks. Works whether the grab started on the entity or on one of its
+         * service blocks. Service blocks carry `data-parent-id` pointing at their
+         * entity's workspace id.
+         */
+        function collectEntityGroup(fromBlock) {
+            const anchorId = fromBlock.dataset.workspaceId || fromBlock.dataset.parentId || null;
+            const els = new Set([fromBlock]);
+            if (anchorId) {
+                const entityEl = document.querySelector(`.sb-block[data-workspace-id="${CSS.escape(anchorId)}"]`);
+                if (entityEl) els.add(entityEl);
+                document.querySelectorAll(`.sb-block[data-parent-id="${CSS.escape(anchorId)}"]`).forEach(el => els.add(el));
+            }
+            return Array.from(els);
+        }
 
         function onMouseDown(e) {
             // Ignore right-clicks/middle-clicks
@@ -46,34 +64,43 @@
 
             e.preventDefault();
 
-            // Handle selection logic early
-            const isMultiSelect = e.ctrlKey || e.metaKey || e.shiftKey;
+            // Shift = move this entity together with its linked services, keeping
+            // their current relative layout. Ctrl/Cmd = multi-select toggle.
+            groupMove = e.shiftKey;
+            const isMultiSelect = e.ctrlKey || e.metaKey;
 
-            if (isMultiSelect) {
-                // Toggle selection state
-                block.classList.toggle('sb-block-selected');
-                // If it was just deselected, don't start a drag
-                if (!block.classList.contains('sb-block-selected')) return;
+            let blocksToDrag;
+
+            if (groupMove) {
+                // Group move does not alter the current selection.
+                blocksToDrag = collectEntityGroup(block);
             } else {
-                // If clicking an unselected block without modifiers, clear others and select this one
-                // If clicking an already selected block, keep others selected (we might be starting a group drag)
-                if (!block.classList.contains('sb-block-selected')) {
-                    document.querySelectorAll('.sb-block-selected').forEach(b => b.classList.remove('sb-block-selected'));
-                    block.classList.add('sb-block-selected');
+                if (isMultiSelect) {
+                    // Toggle selection state
+                    block.classList.toggle('sb-block-selected');
+                    // If it was just deselected, don't start a drag
+                    if (!block.classList.contains('sb-block-selected')) return;
+                } else {
+                    // If clicking an unselected block without modifiers, clear others and select this one
+                    // If clicking an already selected block, keep others selected (we might be starting a group drag)
+                    if (!block.classList.contains('sb-block-selected')) {
+                        document.querySelectorAll('.sb-block-selected').forEach(b => b.classList.remove('sb-block-selected'));
+                        block.classList.add('sb-block-selected');
+                    }
+                }
+
+                // Gather all selected blocks for dragging
+                blocksToDrag = Array.from(document.querySelectorAll('.sb-block-selected'));
+                // If the current block somehow isn't in the selection, make sure it is included
+                if (!blocksToDrag.includes(block)) {
+                    blocksToDrag.push(block);
                 }
             }
 
             startMouseX = e.clientX;
             startMouseY = e.clientY;
 
-            // Gather all selected blocks for dragging
-            const selectedBlocks = Array.from(document.querySelectorAll('.sb-block-selected'));
-            // If the current block somehow isn't in the selection, make sure it is included
-            if (!selectedBlocks.includes(block)) {
-                selectedBlocks.push(block);
-            }
-
-            draggingBlocks = selectedBlocks.map(b => ({
+            draggingBlocks = blocksToDrag.map(b => ({
                 el: b,
                 startLeft: parseInt(b.style.left, 10) || 0,
                 startTop: parseInt(b.style.top, 10) || 0,
@@ -113,21 +140,22 @@
         }
 
         function onMouseUp(e) {
-            const isMultiSelect = e.ctrlKey || e.metaKey || e.shiftKey;
+            const isMultiSelect = e.ctrlKey || e.metaKey;
 
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
 
             if (!isDragging) {
-                // It was just a click, not a drag. 
-                // If modifiers were NOT used and we clicked a selected block,
-                // we should clear all other selections now (making it the only selection).
-                if (!isMultiSelect) {
+                // It was just a click, not a drag.
+                // For a plain click (no multi-select, no group move) on a selected
+                // block, collapse selection down to just this block.
+                if (!isMultiSelect && !groupMove) {
                     document.querySelectorAll('.sb-block-selected').forEach(b => {
                         if (b !== block) b.classList.remove('sb-block-selected');
                     });
                 }
                 draggingBlocks = [];
+                groupMove = false;
                 return;
             }
 
@@ -143,6 +171,7 @@
             }
 
             draggingBlocks = [];
+            groupMove = false;
             if (window.SbViewport) window.SbViewport.renderMinimap();
         }
 

@@ -383,15 +383,16 @@ body {
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
 }
 
-.sb-block-selected {
+.sb-block-selected,
+.sb-block-selected:hover {
     border-color: var(--sb-accent);
-    /* box-shadow: 0 0 0 1px var(--sb-accent), 0 6px 24px rgba(0, 0, 0, 0.6); */
+    box-shadow: 0 0 0 2px var(--sb-accent), 0 6px 24px rgba(0, 0, 0, 0.6);
 }
 
 .sb-block.sb-block-dragging {
-    opacity: 0.85;
+    opacity: 0.9;
     z-index: 50;
-    /* box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7); */
+    box-shadow: 0 0 0 2px var(--sb-accent), 0 12px 40px rgba(0, 0, 0, 0.7);
 }
 
 .sb-block.sb-block-connected {
