@@ -292,7 +292,7 @@
 /* --- Relationships --- */
 .fishbowl-inspector-rel-sublabel {
     font-size: var(--t-xs);
-    color: var(--fg-4);
+    color: var(--fg-2);
     margin: var(--s-2) 0 var(--s-1);
 }
 

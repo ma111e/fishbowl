@@ -286,8 +286,10 @@ class FishBowlPanelManager {
     }
 
     /**
-     * Redistributes panels between right and top-left containers
-     * Keep a maximum of 4 panels in the right container
+     * Shows all populated panels in the right container (up to 6, one per
+     * right-side panel type). When they exceed the viewport height, the
+     * container scrolls (overflow-y: auto); there is no separate overflow
+     * container.
      */
     redistributePanels() {
         const root = this.getRoot();
@@ -310,8 +312,8 @@ class FishBowlPanelManager {
             panel.style.display = 'none';
         });
 
-        // Display up to 4 panels in the right container
-        const rightPanels = visiblePanels.slice(0, 4);
+        // Display up to 6 panels in the right container (all right-side panel types)
+        const rightPanels = visiblePanels.slice(0, 6);
         rightPanels.forEach(panel => {
             panel.style.display = 'flex';
         });

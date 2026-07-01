@@ -45,17 +45,18 @@ func HandleAnalyzePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.WithFields(log.Fields{
+	log.WithFields(logFields(nil, log.Fields{
 		"url": request.URL,
-	}).Info("Analyzing website")
+	})).Info("Analyzing website")
 
 	// Perform comprehensive analysis
 	response, err := analyzer.AnalyzePage(request.HTML, request.URL, request.Timestamp)
 	if err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logFields(log.Fields{
 			"error": err,
-			"url":   request.URL,
-		}).Error("Analysis failed")
+		}, log.Fields{
+			"url": request.URL,
+		})).Error("Analysis failed")
 		http.Error(w, "Analysis failed", http.StatusInternalServerError)
 		return
 	}
@@ -63,19 +64,21 @@ func HandleAnalyzePage(w http.ResponseWriter, r *http.Request) {
 	response.ProcessingTimeMs = time.Since(startTime).Milliseconds()
 
 	if err := writeJSON(w, http.StatusOK, response); err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logFields(log.Fields{
 			"error": err,
-			"url":   request.URL,
-		}).Error("Error encoding response")
+		}, log.Fields{
+			"url": request.URL,
+		})).Error("Error encoding response")
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
 
-	log.WithFields(log.Fields{
-		"url":                  request.URL,
+	log.WithFields(logFields(log.Fields{
 		"processing_time_ms":   response.ProcessingTimeMs,
 		"ip_count":             len(response.IpAddresses),
 		"windows_events_count": len(response.WindowsEvents),
 		"domains_count":        len(response.Domains),
-	}).Info("Analysis completed")
+	}, log.Fields{
+		"url": request.URL,
+	})).Info("Analysis completed")
 }

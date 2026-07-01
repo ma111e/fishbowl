@@ -73,21 +73,23 @@ func HandleIPVerdictFromDOM(w http.ResponseWriter, r *http.Request) {
 	response := analyzeReputationFromDom(request, entityType, startTime)
 
 	if err := writeJSON(w, http.StatusOK, response); err != nil {
-		log.WithFields(log.Fields{
+		log.WithFields(logFields(log.Fields{
 			"error": err,
+		}, log.Fields{
 			"value": request.Value,
-		}).Error("Error encoding response")
+		})).Error("Error encoding response")
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
 
-	log.WithFields(log.Fields{
-		"value":              request.Value,
+	log.WithFields(logFields(log.Fields{
 		"entity_type":        request.EntityType,
 		"source":             request.Source,
 		"processing_time_ms": response.ProcessingTimeMs,
 		"verdict":            response.Verdict,
-	}).Info("DOM analysis completed")
+	}, log.Fields{
+		"value": request.Value,
+	})).Info("DOM analysis completed")
 }
 
 // analyzeReputationFromDom analyzes the DOM content for Value reputation

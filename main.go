@@ -21,6 +21,8 @@ import (
 var version = "dev"
 
 func main() {
+	configureLogging()
+
 	args := os.Args[1:]
 	if len(args) == 0 {
 		printUsage()
@@ -43,6 +45,20 @@ func main() {
 	default:
 		printUsage()
 		os.Exit(1)
+	}
+}
+
+// configureLogging sets the global log level from FISHBOWL_DEBUG. Debug mode is
+// verbose and, by design, logs sensitive user data (visited URLs, analyzed
+// values), so it warns loudly when enabled. See config.DebugEnvVar.
+func configureLogging() {
+	if config.DebugEnabled() {
+		log.SetLevel(log.DebugLevel)
+		log.Warnf("[SECURITY] %s is enabled: debug logs include visited URLs "+
+			"(browsing history) and analyzed values. Do not enable this in "+
+			"shared or production environments.", config.DebugEnvVar)
+	} else {
+		log.SetLevel(log.InfoLevel)
 	}
 }
 

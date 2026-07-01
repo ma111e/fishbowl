@@ -626,17 +626,18 @@ class FishBowlEntityInspector {
     }
 
     /**
-     * Build the set of "field=value" pairs used to relate entities. Only the
+     * Build the map of "field=value" pairs used to relate entities. Only the
      * relevant identity/network fields (RELATIONSHIP_FIELDS) are considered, with
      * scalar and array-of-scalar values; null/undefined, nested objects, and
      * object-arrays are skipped. The boolean network flags (RELATIONSHIP_TRUE_ONLY:
-     * proxy/tor/relay/vpn) only count when true. Pairs are lowercased so matching
+     * proxy/tor/relay/vpn) only count when true. Keys are lowercased so matching
      * is case-insensitive, and fields are not namespaced by source (e.g.
-     * country=germany matches across sources).
-     * @returns {Set<string>}
+     * country=germany matches across sources). The mapped value keeps the original
+     * field name and value casing so relationships can be labeled for display.
+     * @returns {Map<string, {field: string, value: string}>}
      */
     _fieldValuePairs(entity) {
-        const pairs = new Set();
+        const pairs = new Map();
         const results = entity.cachedData?.results;
         if (!results || typeof results !== 'object') return pairs;
 
@@ -669,8 +670,10 @@ class FishBowlEntityInspector {
                     continue;
                 }
 
-                // Lowercased so relationship matching is case-insensitive.
-                pairs.add(`${field}=${val}`.toLowerCase());
+                // Lowercased key so relationship matching is case-insensitive;
+                // keep the original casing for display.
+                const key = `${field}=${val}`.toLowerCase();
+                if (!pairs.has(key)) pairs.set(key, { field, value: val });
             }
         }
         return pairs;
@@ -678,25 +681,50 @@ class FishBowlEntityInspector {
 
     /**
      * Relationships = other entities that share at least one exact identical
-     * source field:value (see _fieldValuePairs) with the selected entity.
+     * source field:value (see _fieldValuePairs) with the selected entity. Related
+     * entities are grouped by the shared value they have in common, so the user
+     * can see which value each relationship is based on. An entity that shares
+     * several values appears under each relevant group.
      */
     _renderRelationships(entity) {
         const selfPairs = this._fieldValuePairs(entity);
         if (selfPairs.size === 0) return null;
 
         const selfKey = this._entityKey(entity);
-        const related = this.entities.filter(en => {
-            if (this._entityKey(en) === selfKey) return false;
-            for (const pair of this._fieldValuePairs(en)) {
-                if (selfPairs.has(pair)) return true;
-            }
-            return false;
-        });
 
-        if (related.length === 0) return null;
+        // Bucket related entities under each shared pair key.
+        const buckets = new Map(); // key -> { field, value, entities: [] }
+        for (const en of this.entities) {
+            if (this._entityKey(en) === selfKey) continue;
+            for (const [key, meta] of this._fieldValuePairs(en)) {
+                if (!selfPairs.has(key)) continue;
+                if (!buckets.has(key)) {
+                    const self = selfPairs.get(key);
+                    buckets.set(key, { field: self.field, value: self.value, entities: [] });
+                }
+                buckets.get(key).entities.push(en);
+            }
+        }
+
+        if (buckets.size === 0) return null;
+
+        // Most-connected value first.
+        const ordered = [...buckets.values()].sort((a, b) => b.entities.length - a.entities.length);
 
         const wrap = document.createElement('div');
-        wrap.appendChild(this._chips(related.slice(0, 40)));
+        let remaining = 40; // overall chip cap to avoid runaway lists
+        for (const bucket of ordered) {
+            if (remaining <= 0) break;
+
+            const sublabel = document.createElement('div');
+            sublabel.className = 'fishbowl-inspector-rel-sublabel';
+            sublabel.textContent = `${this._humanizeKey(bucket.field)}: ${bucket.value}`;
+            wrap.appendChild(sublabel);
+
+            const shown = bucket.entities.slice(0, remaining);
+            remaining -= shown.length;
+            wrap.appendChild(this._chips(shown));
+        }
         return wrap;
     }
 

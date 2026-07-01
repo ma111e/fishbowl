@@ -125,6 +125,7 @@
     const valueSearch = document.getElementById('sb-value-search');
     const valueOptions = document.getElementById('sb-value-options');
     const valuePills = document.getElementById('sb-value-pills');
+    const btnRemoveOthers = document.getElementById('sb-btn-remove-others');
 
     async function init() {
         SbLinks.init(linksSvg, canvasInner);
@@ -198,6 +199,8 @@ else if (layout === 'force') await arrangeForce();
             // Fires when a datalist option is picked (and on blur with typed text)
             valueSearch.addEventListener('change', () => addValueFilter(valueSearch.value));
         }
+
+        if (btnRemoveOthers) btnRemoveOthers.addEventListener('click', onRemoveOthers);
 
         // Hold Alt to reveal clickable values on the canvas, then click one to add it as a pill.
         document.addEventListener('keydown', (e) => {
@@ -1061,7 +1064,54 @@ else if (layout === 'force') await arrangeForce();
         SbEntityBlocks.applyValueFilter(canvasInner, activeInv(), valueFilters);
     }
 
+    // Prune the workspace down to the matched entities. The DOM's `.sb-value-match` class is
+    // the source of truth for what's highlighted (see SbEntityBlocks.applyValueFilter, which
+    // also marks the parent entity of any matched service block). We remove the *entities*
+    // that aren't matched together with their service blocks — but every service of a kept
+    // entity stays, even the services that didn't match the value themselves.
+    async function onRemoveOthers() {
+        const inv = activeInv();
+        if (!inv) return;
+
+        const keepWorkspace = new Set();
+        canvasInner.querySelectorAll('.sb-block.sb-value-match[data-workspace-id]').forEach(el => {
+            keepWorkspace.add(el.dataset.workspaceId);
+        });
+        // A matched service block keeps its parent entity (and thus all of that entity's services).
+        canvasInner.querySelectorAll('.sb-block.sb-value-match[data-enrichment-id]').forEach(el => {
+            const eb = (inv.enrichmentBlocks || []).find(b => b.id === el.dataset.enrichmentId);
+            if (eb && eb.parentId) keepWorkspace.add(eb.parentId);
+        });
+
+        // Nothing highlighted → removing "others" would wipe everything; bail out instead.
+        if (keepWorkspace.size === 0) return;
+
+        const keepEnrichmentBlock = b => keepWorkspace.has(b.parentId);
+        const totalBlocks = (inv.workspaceEntities || []).length + (inv.enrichmentBlocks || []).length;
+        const keptBlocks = (inv.workspaceEntities || []).filter(w => keepWorkspace.has(w.id)).length
+            + (inv.enrichmentBlocks || []).filter(keepEnrichmentBlock).length;
+        const removeCount = totalBlocks - keptBlocks;
+        if (removeCount <= 0) return;
+
+        if (!confirm(`Remove ${removeCount} block${removeCount === 1 ? '' : 's'} that don't match the highlight filter?`)) return;
+
+        inv.workspaceEntities = (inv.workspaceEntities || []).filter(w => keepWorkspace.has(w.id));
+        // Keep every service of a kept entity; drop services whose parent entity is gone.
+        inv.enrichmentBlocks = (inv.enrichmentBlocks || []).filter(keepEnrichmentBlock);
+
+        const liveIds = new Set([...keepWorkspace, ...inv.enrichmentBlocks.map(b => b.id)]);
+        inv.links = (inv.links || []).filter(l => liveIds.has(l.from.blockId) && liveIds.has(l.to.blockId));
+
+        // Clear the now-meaningless filter so the pruned workspace shows un-dimmed.
+        valueFilters.length = 0;
+        renderValuePills();
+
+        await persistInv(inv);
+        render();
+    }
+
     function renderValuePills() {
+        if (btnRemoveOthers) btnRemoveOthers.style.display = valueFilters.length ? '' : 'none';
         if (!valuePills) return;
         valuePills.innerHTML = '';
         valueFilters.forEach((value, idx) => {

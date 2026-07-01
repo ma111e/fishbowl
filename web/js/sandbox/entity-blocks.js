@@ -559,7 +559,14 @@
         body.className = 'sb-block-body';
 
         const details = enrichment.details || {};
-        const detailKeys = Object.keys(details).slice(0, 8);
+        // Float the most meaningful reputation fields to the front so they survive the
+        // 8-key cap below. Backends serialize detail maps with alphabetically-sorted keys,
+        // which would otherwise push AbuseIPDB's reportCount (9th alphabetically) out of view.
+        const DETAIL_PRIORITY = ['abuseConfidenceScore', 'reportCount', 'distinctUsers'];
+        const detailKeys = [
+            ...DETAIL_PRIORITY.filter(k => k in details),
+            ...Object.keys(details).filter(k => !DETAIL_PRIORITY.includes(k))
+        ].slice(0, 8);
         if (detailKeys.length > 0) {
             const detailsEl = document.createElement('div');
             detailsEl.className = 'sb-enrichment-details';
