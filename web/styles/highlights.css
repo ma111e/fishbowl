@@ -22,7 +22,7 @@
 }
 
 /* Event ID highlight styling */
-.fishbowl-event-highlight {
+.fishbowl-event-highlight:not(.event-item) {
   background: var(--color-event-highlight-bg);
   color: var(--color-event-highlight-text, currentColor);
   border: 1px solid var(--color-event-highlight-border);
