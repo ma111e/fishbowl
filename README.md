@@ -56,6 +56,28 @@ fishbowl api register
   keys live in an encrypted local vault, and extension-backend traffic is signed
   on both ends.
 
+## Screenshots
+
+<p align="center">
+  <img src=".github/assets/selection-actions.png" alt="Selection actions" width="900">
+</p>
+<p align="center"><em>Analyze an entity and pivot using multiple services</em></p>
+
+<p align="center">
+  <img src=".github/assets/entity-search.png" alt="Entity search" width="900">
+</p>
+<p align="center"><em>Search any indicator detected on the current page</em></p>
+
+<p align="center">
+  <img src=".github/assets/entity-inspector.png" alt="Entity Inspector" width="900">
+</p>
+<p align="center"><em>Use the entity inspector to view enrichments and related indicators</em></p>
+
+<p align="center">
+  <img src=".github/assets/investigation.png" alt="Investigation sandbox" width="900">
+</p>
+<p align="center"><em>Build and explore a graph of entities collected across one or more pages. Here all entities matching a specific value are highlighted</em></p>
+
 ## Documentation
 
 Full documentation is available in the [documentation index](docs/README.md):
