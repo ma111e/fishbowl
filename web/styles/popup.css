@@ -305,6 +305,40 @@ body {
   padding: 0;
 }
 
+/* ── Segmented control (Auto / Light / Dark) ─────────────── */
+
+.fb-seg {
+  display: inline-flex;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.fb-seg-btn {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--fg-3);
+  background: transparent;
+  border: none;
+  padding: 3px 9px;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.fb-seg-btn + .fb-seg-btn {
+  border-left: 1px solid var(--border-1);
+}
+
+.fb-seg-btn:hover {
+  color: var(--fg-1);
+}
+
+.fb-seg-btn.is-active {
+  background: var(--accent);
+  color: var(--bg-0);
+}
+
 /* ── Inline sub-text (hints within toggle labels) ────────── */
 
 .fb-toggle-sub {
@@ -470,20 +504,27 @@ body {
   color: var(--c-domain);
 }
 
-.fishbowl-popup-whitelist-domain-item-remove {
+.remove-whitelist-domain {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
   background: none;
-  border: none;
+  border: 1px solid var(--c-domain-border);
+  border-radius: var(--radius-sm);
   color: var(--fg-3);
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: var(--t-sm);
-  padding: 0 2px;
   line-height: 1;
 }
 
-.fishbowl-popup-whitelist-domain-item-remove:hover {
+.remove-whitelist-domain:hover {
   color: var(--c-danger);
+  border-color: var(--c-danger);
 }
 
 /* ── Activity logs ───────────────────────────────────────── */

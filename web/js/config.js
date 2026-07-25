@@ -92,6 +92,7 @@ const FishBowlConfig = {
         scanHashes: true,
         scanFiles: true,
         showEventDescriptions: false,
+        subtleHighlights: false,
         confirmAiServices: false,
         textareaInspectOverlayEnabled: false,
         textareaInspectOverlayDefault: false,
@@ -99,7 +100,7 @@ const FishBowlConfig = {
         showVisualUpdates: true,
         showActivityFeed: true,
         showPanelHeaders: true,
-        animateActivityFeedText: true,
+        animateActivityFeedText: false,
         enableCache: true,
         reputationServices: {
             ip: {
@@ -127,7 +128,7 @@ const FishBowlConfig = {
             }
         },
         infoPanelOpacity: 0.35,
-        theme: 'dark',
+        theme: 'auto',
         domainWhitelist: [],
         useDomainWhitelist: false,
         domainBlacklist: [],
@@ -348,6 +349,10 @@ FishBowlConfig.validateSettings = function validateSettings(settings) {
         settings.showEventDescriptions = false;
     }
     requireBool('showEventDescriptions');
+    if (typeof settings.subtleHighlights !== 'boolean') {
+        settings.subtleHighlights = false;
+    }
+    requireBool('subtleHighlights');
     if (typeof settings.confirmAiServices !== 'boolean') {
         settings.confirmAiServices = false;
     }
@@ -363,7 +368,7 @@ FishBowlConfig.validateSettings = function validateSettings(settings) {
     requireBool('showPanelHeaders');
 
     if (typeof settings.animateActivityFeedText !== 'boolean') {
-        settings.animateActivityFeedText = true;
+        settings.animateActivityFeedText = false;
     }
     requireBool('animateActivityFeedText');
 
@@ -385,8 +390,8 @@ FishBowlConfig.validateSettings = function validateSettings(settings) {
         throw new Error('Invalid settings: infoPanelOpacity must be a finite number');
     }
 
-    if (settings.theme !== 'dark' && settings.theme !== 'light') {
-        throw new Error('Invalid settings: theme must be "dark" or "light"');
+    if (settings.theme !== 'auto' && settings.theme !== 'dark' && settings.theme !== 'light') {
+        throw new Error('Invalid settings: theme must be "auto", "dark" or "light"');
     }
 
     if (!settings.reputationServices || typeof settings.reputationServices !== 'object') {

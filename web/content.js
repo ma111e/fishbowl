@@ -538,9 +538,12 @@ if (document.readyState === 'loading') {
         _lastHref = href;
 
         // Re-run page analysis for the new URL; HUD clears stale results.
+        // Silent: SPAs like OpenSearch Discover store view state in the URL hash
+        // and fire navigation on nearly every interaction, so suppress the
+        // per-scan "Scan complete" feed entry to avoid spamming the user.
         try {
             if (window.fishTankHUD && typeof window.fishTankHUD.performAnalysis === 'function') {
-                window.fishTankHUD.performAnalysis();
+                window.fishTankHUD.performAnalysis(true);
             }
         } catch (e) {
             console.warn('[FB:Content] SPA navigation re-analysis failed', e);

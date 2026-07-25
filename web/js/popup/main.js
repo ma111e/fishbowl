@@ -107,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ipAddressesToggle = document.getElementById('toggle-ip-addresses');
   const eventIdsToggle = document.getElementById('toggle-event-ids');
   const eventDescriptionsToggle = document.getElementById('toggle-event-descriptions');
+  const subtleHighlightsToggle = document.getElementById('toggle-subtle-highlights');
   const confirmAiServicesToggle = document.getElementById('toggle-confirm-ai-services');
   const sidsToggle = document.getElementById('toggle-sids');
   const asnToggle = document.getElementById('toggle-asn');
@@ -118,7 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const activityFeedTextAnimationToggle = document.getElementById('toggle-activity-feed-text-animation');
   const panelHeadersToggle = document.getElementById('toggle-panel-headers');
   const enableCacheToggle = document.getElementById('toggle-enable-cache');
-  const themeDarkToggle = document.getElementById('toggle-theme-dark');
+  const themeSegment = document.getElementById('theme-segment');
+  const themeSegButtons = themeSegment ? Array.from(themeSegment.querySelectorAll('.fb-seg-btn')) : [];
   const textareaInspectOverlayEnabledToggle = document.getElementById('toggle-textarea-inspect-overlay-enabled');
   const textareaInspectOverlayDefaultToggle = document.getElementById('toggle-textarea-inspect-overlay-default');
   const textareaInspectOverlayHoldToShowToggle = document.getElementById('toggle-textarea-inspect-overlay-hold-to-show');
@@ -127,10 +129,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const infoPanelOpacityInput = document.getElementById('info-panel-opacity');
   const infoPanelOpacityValue = document.getElementById('info-panel-opacity-value');
 
+  const normalizeTheme = (t) => (t === 'auto' || t === 'light' || t === 'dark') ? t : 'auto';
+
+  // Reflect the active theme mode in the segmented control.
+  const setThemeSegment = (theme) => {
+    const value = normalizeTheme(theme);
+    for (const btn of themeSegButtons) {
+      const active = btn.dataset.theme === value;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-checked', active ? 'true' : 'false');
+    }
+  };
+
   // Apply the resolved theme to the popup's own document so the popup UI
-  // (not just the page HUD) follows the dark/light setting.
+  // (not just the page HUD) follows the dark/light setting. The popup has no
+  // host page to sample, so "auto" falls back to the default dark chrome here.
   const applyPopupTheme = (theme) => {
-    const t = theme === 'light' ? 'light' : 'dark';
+    const t = normalizeTheme(theme) === 'light' ? 'light' : 'dark';
     const el = document.documentElement;
     el.classList.remove('fishbowl-theme-light', 'fishbowl-theme-dark');
     el.classList.add(`fishbowl-theme-${t}`);
@@ -173,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ipAddressesToggle.checked = settings.scanIpAddresses;
     eventIdsToggle.checked = settings.scanEventIds;
     eventDescriptionsToggle.checked = !!settings.showEventDescriptions;
+    subtleHighlightsToggle.checked = !!settings.subtleHighlights;
     if (confirmAiServicesToggle) {
       confirmAiServicesToggle.checked = !!settings.confirmAiServices;
     }
@@ -194,8 +210,8 @@ document.addEventListener('DOMContentLoaded', () => {
       panelHeadersToggle.checked = settings.showPanelHeaders !== false;
     }
     enableCacheToggle.checked = settings.enableCache !== undefined ? settings.enableCache : true;
-    themeDarkToggle.checked = (settings.theme || 'dark') === 'dark';
-    applyPopupTheme(settings.theme || 'dark');
+    setThemeSegment(settings.theme || 'auto');
+    applyPopupTheme(settings.theme || 'auto');
     if (textareaInspectOverlayEnabledToggle) {
       textareaInspectOverlayEnabledToggle.checked = !!settings.textareaInspectOverlayEnabled;
     }
@@ -231,17 +247,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const host = FishBowlConsts.extractDomainFromUserInput(tabUrl);
         const domainKey = FishBowlConsts.domainSettingsKeyForHost(host);
         if (!domainKey) {
-          themeDarkToggle.checked = (settings.theme || 'dark') === 'dark';
-          applyPopupTheme(settings.theme || 'dark');
+          setThemeSegment(settings.theme || 'auto');
+          applyPopupTheme(settings.theme || 'auto');
           return;
         }
 
         browser.storage.local.get([domainKey], (domainResult) => {
           const domainSettings = domainResult?.[domainKey] || {};
-          const resolvedTheme = (domainSettings.theme === 'dark' || domainSettings.theme === 'light')
+          const resolvedTheme = (domainSettings.theme === 'auto' || domainSettings.theme === 'dark' || domainSettings.theme === 'light')
             ? domainSettings.theme
-            : (settings.theme || 'dark');
-          themeDarkToggle.checked = resolvedTheme === 'dark';
+            : (settings.theme || 'auto');
+          setThemeSegment(resolvedTheme);
           applyPopupTheme(resolvedTheme);
         });
       });
@@ -380,6 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsBridge.updateSetting('showEventDescriptions', eventDescriptionsToggle.checked);
   });
 
+  subtleHighlightsToggle.addEventListener('change', () => {
+    settingsBridge.updateSetting('subtleHighlights', subtleHighlightsToggle.checked);
+  });
+
   if (confirmAiServicesToggle) {
     confirmAiServicesToggle.addEventListener('change', () => {
       settingsBridge.updateSetting('confirmAiServices', confirmAiServicesToggle.checked);
@@ -432,11 +452,16 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsBridge.updateSetting('enableCache', enableCacheToggle.checked);
   });
 
-  themeDarkToggle.addEventListener('change', () => {
-    const theme = themeDarkToggle.checked ? 'dark' : 'light';
-    settingsBridge.updateThemeForCurrentDomain(theme);
-    applyPopupTheme(theme);
-  });
+  const selectTheme = (theme) => {
+    const value = normalizeTheme(theme);
+    setThemeSegment(value);
+    settingsBridge.updateThemeForCurrentDomain(value);
+    applyPopupTheme(value);
+  };
+
+  for (const btn of themeSegButtons) {
+    btn.addEventListener('click', () => selectTheme(btn.dataset.theme));
+  }
 
   function applyTextareaOverlaySubSettingsState(enabled) {
     if (!textareaOverlaySubSettings) return;
@@ -506,10 +531,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 't') {
       e.preventDefault();
-      themeDarkToggle.checked = !themeDarkToggle.checked;
-      const theme = themeDarkToggle.checked ? 'dark' : 'light';
-      settingsBridge.updateThemeForCurrentDomain(theme);
-      applyPopupTheme(theme);
+      const order = ['auto', 'light', 'dark'];
+      const current = themeSegButtons.find((b) => b.classList.contains('is-active'))?.dataset.theme || 'auto';
+      selectTheme(order[(order.indexOf(current) + 1) % order.length]);
     }
   });
 

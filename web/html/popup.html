@@ -188,6 +188,15 @@
           <div class="fb-toggle-text"><span class="fb-toggle-label">Event ID descriptions</span></div>
         </label>
 
+        <label class="fb-toggle-row" for="toggle-subtle-highlights">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-subtle-highlights">
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Subtle highlights (underline)</span></div>
+        </label>
+
         <label class="fb-toggle-row" for="toggle-activity-feed">
           <span class="fishbowl-popup-toggle">
             <input type="checkbox" id="toggle-activity-feed" checked>
@@ -199,7 +208,7 @@
 
         <label class="fb-toggle-row" for="toggle-activity-feed-text-animation">
           <span class="fishbowl-popup-toggle">
-            <input type="checkbox" id="toggle-activity-feed-text-animation" checked>
+            <input type="checkbox" id="toggle-activity-feed-text-animation">
             <span class="fishbowl-popup-toggle-box">[ ]</span>
             <span class="fishbowl-popup-toggle-box-checked">[x]</span>
           </span>
@@ -227,14 +236,14 @@
           </div>
         </label>
 
-        <label class="fb-toggle-row" for="toggle-theme-dark">
-          <span class="fishbowl-popup-toggle">
-            <input type="checkbox" id="toggle-theme-dark" checked>
-            <span class="fishbowl-popup-toggle-box">[ ]</span>
-            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
-          </span>
-          <div class="fb-toggle-text"><span class="fb-toggle-label">Dark Theme</span></div>
-        </label>
+        <div class="fb-toggle-row fb-toggle-row-between">
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Theme</span></div>
+          <div class="fb-seg" id="theme-segment" role="radiogroup" aria-label="Theme">
+            <button type="button" class="fb-seg-btn" data-theme="auto" role="radio" aria-checked="false">Auto</button>
+            <button type="button" class="fb-seg-btn" data-theme="light" role="radio" aria-checked="false">Light</button>
+            <button type="button" class="fb-seg-btn" data-theme="dark" role="radio" aria-checked="false">Dark</button>
+          </div>
+        </div>
 
         <label class="fb-toggle-row" for="toggle-textarea-inspect-overlay-enabled">
           <span class="fishbowl-popup-toggle">
@@ -418,6 +427,56 @@
     <!-- ── Policy tab ────────────────────────────────────── -->
     <div id="policy-tab" class="fishbowl-popup-tab-content">
 
+      <!-- CSP Bypass -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">CSP Bypass</h3>
+        </header>
+        <p class="fb-card-desc">Allows the extension to send page data to your local backend even when the site's CSP blocks it. Only enable for trusted domains.</p>
+
+        <div class="fb-input-row">
+          <input type="text" id="csp-override-domain-input" placeholder="Enter domain or URL" class="fb-text-input">
+          <button id="csp-override-add-domain" class="fb-pill-btn fb-pill-btn--accent">+ Add</button>
+        </div>
+
+        <div class="fb-toggle-row-between">
+          <label class="fb-toggle-row" for="csp-override-toggle">
+            <span class="fishbowl-popup-toggle">
+              <input type="checkbox" id="csp-override-toggle">
+              <span class="fishbowl-popup-toggle-box">[ ]</span>
+              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+            </span>
+            <div class="fb-toggle-text">
+              <span class="fb-toggle-label">Bypass for current site:
+                <span id="csp-override-current-domain" class="fb-toggle-sub"></span>
+              </span>
+            </div>
+          </label>
+          <button id="clear-csp-override" class="fb-pill-btn fb-pill-btn--danger">Clear all</button>
+        </div>
+
+        <div id="csp-override-domain-preview" class="fb-domain-preview"></div>
+        <div id="csp-override-status" class="fb-list-status"></div>
+        <ul id="csp-override-domain-list" class="fb-domain-list"></ul>
+      </section>
+
+      <!-- Data control -->
+      <section class="fb-card">
+        <header class="fb-card-header">
+          <h3 class="fb-card-title">Data control</h3>
+        </header>
+        <p class="fb-card-desc">Ask for confirmation before sending a selected entity to an external AI service (ChatGPT, Perplexity), to avoid leaking private information.</p>
+
+        <label class="fb-toggle-row" for="toggle-confirm-ai-services">
+          <span class="fishbowl-popup-toggle">
+            <input type="checkbox" id="toggle-confirm-ai-services">
+            <span class="fishbowl-popup-toggle-box">[ ]</span>
+            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
+          </span>
+          <div class="fb-toggle-text"><span class="fb-toggle-label">Confirm before using AI services</span></div>
+        </label>
+      </section>
+
       <!-- Domain Whitelist -->
       <section class="fb-card">
         <header class="fb-card-header">
@@ -482,56 +541,6 @@
         <div id="blacklist-domain-preview" class="fb-domain-preview"></div>
         <div id="blacklist-status" class="fb-list-status"></div>
         <ul id="blacklist-domain-list" class="fb-domain-list"></ul>
-      </section>
-
-      <!-- CSP Bypass -->
-      <section class="fb-card">
-        <header class="fb-card-header">
-          <h3 class="fb-card-title">CSP Bypass</h3>
-        </header>
-        <p class="fb-card-desc">Allows the extension to send page data to your local backend even when the site's CSP blocks it. Only enable for trusted domains.</p>
-
-        <div class="fb-input-row">
-          <input type="text" id="csp-override-domain-input" placeholder="Enter domain or URL" class="fb-text-input">
-          <button id="csp-override-add-domain" class="fb-pill-btn fb-pill-btn--accent">+ Add</button>
-        </div>
-
-        <div class="fb-toggle-row-between">
-          <label class="fb-toggle-row" for="csp-override-toggle">
-            <span class="fishbowl-popup-toggle">
-              <input type="checkbox" id="csp-override-toggle">
-              <span class="fishbowl-popup-toggle-box">[ ]</span>
-              <span class="fishbowl-popup-toggle-box-checked">[x]</span>
-            </span>
-            <div class="fb-toggle-text">
-              <span class="fb-toggle-label">Bypass for current site:
-                <span id="csp-override-current-domain" class="fb-toggle-sub"></span>
-              </span>
-            </div>
-          </label>
-          <button id="clear-csp-override" class="fb-pill-btn fb-pill-btn--danger">Clear all</button>
-        </div>
-
-        <div id="csp-override-domain-preview" class="fb-domain-preview"></div>
-        <div id="csp-override-status" class="fb-list-status"></div>
-        <ul id="csp-override-domain-list" class="fb-domain-list"></ul>
-      </section>
-
-      <!-- Data control -->
-      <section class="fb-card">
-        <header class="fb-card-header">
-          <h3 class="fb-card-title">Data control</h3>
-        </header>
-        <p class="fb-card-desc">Ask for confirmation before sending a selected entity to an external AI service (ChatGPT, Perplexity), to avoid leaking private information.</p>
-
-        <label class="fb-toggle-row" for="toggle-confirm-ai-services">
-          <span class="fishbowl-popup-toggle">
-            <input type="checkbox" id="toggle-confirm-ai-services">
-            <span class="fishbowl-popup-toggle-box">[ ]</span>
-            <span class="fishbowl-popup-toggle-box-checked">[x]</span>
-          </span>
-          <div class="fb-toggle-text"><span class="fb-toggle-label">Confirm before using AI services</span></div>
-        </label>
       </section>
 
     </div><!-- /policy-tab -->

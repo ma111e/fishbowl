@@ -445,6 +445,22 @@ body.fishbowl-panels-hidden .fishbowl-panel-right {
   opacity: 1 !important;
 }
 
+@keyframes fishbowl-panel-fade-in {
+  from { opacity: 0; }
+}
+
+/* One-shot fade applied by JS (see panels.js _revealPanel) the first time a
+   panel appears. The partial keyframe (only `from`) animates from 0 up to the
+   panel's resting var(--fishbowl-info-panel-opacity) value, so the configurable
+   opacity and the :hover transition above are preserved. */
+.info-panel.fishbowl-panel-appear {
+  animation: fishbowl-panel-fade-in .5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .info-panel.fishbowl-panel-appear { animation: none; }
+}
+
 /* Panel header - entity dot + label + count */
 .info-panel-header {
   display: flex;

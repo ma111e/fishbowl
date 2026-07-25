@@ -258,6 +258,27 @@
     margin-bottom: var(--s-1);
 }
 
+.fishbowl-inspector-source-visit {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--fg-3);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.fishbowl-inspector-source-visit:hover {
+    color: var(--fg-1);
+    background: var(--bg-1);
+}
+
 .fishbowl-inspector-source-icon {
     width: 14px;
     height: 14px;

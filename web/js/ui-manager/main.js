@@ -482,10 +482,24 @@ class FishBowlUiManager {
                     this.addFeedEntry(`Theme set to ${labelHost ? mergedSettings.theme + ' for ' + labelHost : mergedSettings.theme}`, 'info');
                 };
 
+                // T-shortcut toggles light <-> dark only; never sets 'auto'.
+                // Resolving 'auto' to what it currently displays keeps the toggle
+                // anchored to the visible theme. Resetting to 'auto' is popup-only.
+                const resolveEffectiveTheme = (stored) => {
+                    if (stored === 'light' || stored === 'dark') return stored;
+                    try {
+                        if (window.fishTankHUD && typeof window.fishTankHUD.detectThemeFromPageBackground === 'function') {
+                            return window.fishTankHUD.detectThemeFromPageBackground();
+                        }
+                    } catch (e) {
+                        console.warn('[FishBowlUiManager] Failed to resolve auto theme for toggle', e);
+                    }
+                    return 'dark';
+                };
+                const flip = (theme) => (theme === 'light' ? 'dark' : 'light');
+
                 if (!domainKey) {
-                    const currentTheme = settings.theme === 'light' ? 'light' : 'dark';
-                    const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-                    settings.theme = nextTheme;
+                    settings.theme = flip(resolveEffectiveTheme(settings.theme));
                     browser.storage.local.set({ settings }).then(() => {
                         applyAndNotify(settings, '');
                     });
@@ -494,12 +508,11 @@ class FishBowlUiManager {
 
                 browser.storage.local.get([domainKey]).then(domainResult => {
                     const domainSettings = domainResult?.[domainKey] || {};
-                    const currentTheme = (domainSettings.theme === 'dark' || domainSettings.theme === 'light')
+                    const currentTheme = (domainSettings.theme === 'light' || domainSettings.theme === 'dark')
                         ? domainSettings.theme
-                        : (settings.theme === 'light' ? 'light' : 'dark');
-                    const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+                        : settings.theme;
 
-                    domainSettings.theme = nextTheme;
+                    domainSettings.theme = flip(resolveEffectiveTheme(currentTheme));
 
                     browser.storage.local.set({ settings, [domainKey]: domainSettings }).then(() => {
                         const merged = { ...settings, ...domainSettings };
@@ -536,7 +549,9 @@ class FishBowlUiManager {
                 this.addFeedEntry('HUD reset', 'info');
 
                 if (typeof window.fishTankHUD.performAnalysis === 'function') {
-                    window.fishTankHUD.performAnalysis();
+                    // Silent: a remount is not a user-initiated scan, so don't emit
+                    // a "Scan complete" feed entry.
+                    window.fishTankHUD.performAnalysis(true);
                 }
             }
         } catch (error) {

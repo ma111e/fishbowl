@@ -13,6 +13,28 @@ class FishBowlPanelManager {
 
         // Callback to toggle item selection (set by coordinator)
         this.toggleItemSelection = opts.toggleItemSelection || (() => { });
+
+        // Panel ids that have already played their one-time entrance fade, so
+        // later display toggles on every analysis refresh don't re-flicker.
+        this._appearedPanels = new Set();
+    }
+
+    /**
+     * Reveal a panel (display:flex) and, the first time it appears this HUD
+     * session, play a soft opacity fade-in so it integrates gently over the
+     * page instead of popping. Subsequent reveals are instant.
+     * @param {HTMLElement} panel The .info-panel element to show
+     */
+    _revealPanel(panel) {
+        panel.style.display = 'flex';
+
+        if (this._appearedPanels.has(panel.id)) return;
+        this._appearedPanels.add(panel.id);
+
+        panel.classList.add('fishbowl-panel-appear');
+        panel.addEventListener('animationend', () => {
+            panel.classList.remove('fishbowl-panel-appear');
+        }, { once: true });
     }
 
     /**
@@ -245,7 +267,11 @@ class FishBowlPanelManager {
         const countEl = root.getElementById('hash-panel-count');
         if (countEl) countEl.textContent = safeItems.length;
 
-        panel.style.display = safeItems.length > 0 ? 'flex' : 'none';
+        if (safeItems.length > 0) {
+            this._revealPanel(panel);
+        } else {
+            panel.style.display = 'none';
+        }
     }
 
     /**
@@ -307,15 +333,18 @@ class FishBowlPanelManager {
                 !panelContent.querySelector('.empty-message');
         });
 
-        // First, hide all panels in the right container
+        // Display up to 6 panels in the right container (all right-side panel types).
+        // Diff-based: only change display where it differs from the target state.
+        // This runs once per entity type per analysis (a burst of ~7 calls), so a
+        // panel that stays visible across the burst must NOT be toggled through
+        // display:none — doing so would cancel its one-time first-appearance fade.
+        const rightPanels = new Set(visiblePanels.slice(0, 6));
         allPanels.forEach(panel => {
-            panel.style.display = 'none';
-        });
-
-        // Display up to 6 panels in the right container (all right-side panel types)
-        const rightPanels = visiblePanels.slice(0, 6);
-        rightPanels.forEach(panel => {
-            panel.style.display = 'flex';
+            if (rightPanels.has(panel)) {
+                this._revealPanel(panel);
+            } else if (panel.style.display !== 'none') {
+                panel.style.display = 'none';
+            }
         });
 
         rightPanelContainer.style.display = visiblePanels.length > 0 ? 'flex' : 'none';

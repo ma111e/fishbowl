@@ -1,31 +1,29 @@
 /*
  * Entity highlights are injected into arbitrary host pages whose own CSS we
  * don't control. The `!important` declarations in this file are deliberate:
- * they're needed to win specificity against host-page styles so highlight
- * colors/borders render consistently. Do not "clean them up" - removing them
- * lets host pages override the highlights. (Highlight colors still come from
- * the shared --color-*/--c-* tokens, so theming is unaffected.)
+ * they're needed to win specificity against host-page styles so the soft tint
+ * background renders consistently. Do not "clean them up" - removing them lets
+ * host pages override the highlights. (Highlight colors still come from the
+ * shared --color-* and --c-* tokens, so theming is unaffected.)
  */
 
 /* Common highlight styling */
 .fishbowl-highlight {
   cursor: pointer;
-  border-radius: var(--radius-sm, 4px);
-  padding: 1px 5px;
+  border-radius: var(--radius-xs, 3px);
+  padding: 1px 3px;
   margin: 0 1px;
   position: relative;
   font-size: inherit;
   line-height: inherit;
   color: inherit;
   text-decoration: none;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 /* Event ID highlight styling */
 .fishbowl-event-highlight:not(.event-item) {
-  background: var(--color-event-highlight-bg);
+  background: var(--color-event-highlight-bg) !important;
   color: var(--color-event-highlight-text, currentColor);
-  border: 1px solid var(--color-event-highlight-border);
 }
 
 body.fishbowl-highlights-hidden .fishbowl-highlight {
@@ -40,195 +38,208 @@ body.fishbowl-highlights-hidden .fishbowl-badges-container {
   display: none !important;
 }
 
+/*
+ * Subtle highlight style: drop the filled background/border and render a colored
+ * underline instead. Each entity type keeps its own accent via the color token it
+ * already uses for its border. The inset box-shadow underline avoids layout shift;
+ * a square (0) radius keeps it a flat 1px straight underline with square ends.
+ */
+body.fishbowl-highlights-underline .fishbowl-highlight {
+  background: transparent !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+}
+/* :not(.selected) so a focused entity keeps its selection ring (box-shadow) instead of the underline */
+body.fishbowl-highlights-underline .fishbowl-ip-highlight:not(.ip-item):not(.selected)         { box-shadow: inset 0 -1px 0 0 var(--c-ip-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-event-highlight:not(.event-item):not(.selected)   { box-shadow: inset 0 -1px 0 0 var(--color-event-highlight-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-sid-highlight:not(.sid-item):not(.selected)       { box-shadow: inset 0 -1px 0 0 var(--color-sid-highlight-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-asn-highlight:not(.asn-item):not(.selected)       { box-shadow: inset 0 -1px 0 0 var(--color-asn-highlight-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-domain-highlight:not(.domain-item):not(.selected) { box-shadow: inset 0 -1px 0 0 var(--color-domain-highlight-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-file-highlight:not(.file-item):not(.selected)     { box-shadow: inset 0 -1px 0 0 var(--color-file-highlight-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-hash-highlight:not(.hash-item):not(.selected)     { box-shadow: inset 0 -1px 0 0 var(--color-hash-highlight-border) !important; }
+/* IP verdict variants keep their own accent underline */
+body.fishbowl-highlights-underline .fishbowl-ip-highlight.fishbowl-verdict-malicious:not(.selected)  { box-shadow: inset 0 -1px 0 0 var(--color-verdict-malicious-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-ip-highlight.fishbowl-verdict-suspicious:not(.selected) { box-shadow: inset 0 -1px 0 0 var(--color-verdict-suspicious-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-ip-highlight.fishbowl-verdict-benign:not(.selected)     { box-shadow: inset 0 -1px 0 0 var(--color-verdict-benign-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-ip-highlight.fishbowl-verdict-neutral:not(.selected)    { box-shadow: inset 0 -1px 0 0 var(--color-verdict-neutral-border) !important; }
+body.fishbowl-highlights-underline .fishbowl-ip-highlight.fishbowl-verdict-unknown:not(.selected)    { box-shadow: inset 0 -1px 0 0 var(--color-verdict-unknown-border) !important; }
+/* In underline mode, drop the unknown dashed outline so only the underline shows */
+body.fishbowl-highlights-underline .fishbowl-highlight.fishbowl-verdict-unknown { outline: none !important; }
+
 
 .fishbowl-ip-highlight:not(.ip-item) {
-  background: var(--c-ip-soft);
+  background: var(--c-ip-soft) !important;
   color: var(--c-ip);
-  border: 1px solid var(--c-ip-border) !important;
-  border-radius: 4px;
 }
 
 /* SID highlight styling */
 .fishbowl-sid-highlight:not(.sid-item) {
-  background: var(--color-sid-highlight-bg);
+  background: var(--color-sid-highlight-bg) !important;
   color: var(--color-sid-highlight-text, currentColor);
-  border: 1px solid var(--color-sid-highlight-border) !important;
-  border-radius: 4px;
 }
 
 /* ASN highlight styling */
 .fishbowl-asn-highlight:not(.asn-item) {
-  background: var(--color-asn-highlight-bg);
+  background: var(--color-asn-highlight-bg) !important;
   color: var(--color-asn-highlight-text, currentColor);
-  border: 1px solid var(--color-asn-highlight-border) !important;
-  border-radius: 4px;
 }
 
 /* Domain highlight styling */
 .fishbowl-domain-highlight:not(.domain-item) {
-  background: var(--color-domain-highlight-bg);
+  background: var(--color-domain-highlight-bg) !important;
   color: var(--color-domain-highlight-text, currentColor);
-  border: 1px solid var(--color-domain-highlight-border) !important;
-  border-radius: 4px;
 }
 
 /* File highlight styling */
 .fishbowl-file-highlight:not(.file-item) {
-  background: var(--color-file-highlight-bg);
+  background: var(--color-file-highlight-bg) !important;
   color: var(--color-file-highlight-text, currentColor);
-  border: 1px solid var(--color-file-highlight-border) !important;
-  border-radius: 4px;
 }
 
 /* Hash highlight styling */
 .fishbowl-hash-highlight:not(.hash-item) {
-  background: var(--color-hash-highlight-bg);
+  background: var(--color-hash-highlight-bg) !important;
   color: var(--color-hash-highlight-text, currentColor);
-  border: 1px solid var(--color-hash-highlight-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-ip-highlight.fishbowl-verdict-malicious {
-  background: var(--color-verdict-malicious-bg);
+  background: var(--color-verdict-malicious-bg) !important;
   color: var(--color-verdict-malicious-text, currentColor);
-  border: 1px solid var(--color-verdict-malicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-ip-highlight.fishbowl-verdict-suspicious {
-  background: var(--color-verdict-suspicious-bg);
+  background: var(--color-verdict-suspicious-bg) !important;
   color: var(--color-verdict-suspicious-text, currentColor);
-  border: 1px solid var(--color-verdict-suspicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-ip-highlight.fishbowl-verdict-benign {
-  background: var(--color-verdict-benign-bg);
+  background: var(--color-verdict-benign-bg) !important;
   color: var(--color-verdict-benign-text, currentColor);
-  border: 1px solid var(--color-verdict-benign-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-ip-highlight.fishbowl-verdict-neutral {
-  background: var(--color-verdict-neutral-bg);
+  background: var(--color-verdict-neutral-bg) !important;
   color: var(--color-verdict-neutral-text, currentColor);
-  border: 1px solid var(--color-verdict-neutral-border) !important;
-  border-radius: 4px;
-}
-
-.fishbowl-ip-highlight.fishbowl-verdict-unknown {
-  border: 1px dashed var(--color-verdict-unknown-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-domain-highlight.fishbowl-verdict-malicious {
-  background: var(--color-verdict-malicious-bg);
+  background: var(--color-verdict-malicious-bg) !important;
   color: var(--color-verdict-malicious-text, currentColor);
-  border: 1px solid var(--color-verdict-malicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-domain-highlight.fishbowl-verdict-suspicious {
-  background: var(--color-verdict-suspicious-bg);
+  background: var(--color-verdict-suspicious-bg) !important;
   color: var(--color-verdict-suspicious-text, currentColor);
-  border: 1px solid var(--color-verdict-suspicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-domain-highlight.fishbowl-verdict-benign {
-  background: var(--color-verdict-benign-bg);
+  background: var(--color-verdict-benign-bg) !important;
   color: var(--color-verdict-benign-text, currentColor);
-  border: 1px solid var(--color-verdict-benign-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-domain-highlight.fishbowl-verdict-neutral {
-  background: var(--color-verdict-neutral-bg);
+  background: var(--color-verdict-neutral-bg) !important;
   color: var(--color-verdict-neutral-text, currentColor);
-  border: 1px solid var(--color-verdict-neutral-border) !important;
-  border-radius: 4px;
-}
-
-.fishbowl-domain-highlight.fishbowl-verdict-unknown {
-  border: 1px dashed var(--color-verdict-unknown-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-file-highlight.fishbowl-verdict-malicious {
-  background: var(--color-verdict-malicious-bg);
+  background: var(--color-verdict-malicious-bg) !important;
   color: var(--color-verdict-malicious-text, currentColor);
-  border: 1px solid var(--color-verdict-malicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-file-highlight.fishbowl-verdict-suspicious {
-  background: var(--color-verdict-suspicious-bg);
+  background: var(--color-verdict-suspicious-bg) !important;
   color: var(--color-verdict-suspicious-text, currentColor);
-  border: 1px solid var(--color-verdict-suspicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-file-highlight.fishbowl-verdict-benign {
-  background: var(--color-verdict-benign-bg);
+  background: var(--color-verdict-benign-bg) !important;
   color: var(--color-verdict-benign-text, currentColor);
-  border: 1px solid var(--color-verdict-benign-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-file-highlight.fishbowl-verdict-neutral {
-  background: var(--color-verdict-neutral-bg);
+  background: var(--color-verdict-neutral-bg) !important;
   color: var(--color-verdict-neutral-text, currentColor);
-  border: 1px solid var(--color-verdict-neutral-border) !important;
-  border-radius: 4px;
-}
-
-.fishbowl-file-highlight.fishbowl-verdict-unknown {
-  border: 1px dashed var(--color-verdict-unknown-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-hash-highlight.fishbowl-verdict-malicious {
-  background: var(--color-verdict-malicious-bg);
+  background: var(--color-verdict-malicious-bg) !important;
   color: var(--color-verdict-malicious-text, currentColor);
-  border: 1px solid var(--color-verdict-malicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-hash-highlight.fishbowl-verdict-suspicious {
-  background: var(--color-verdict-suspicious-bg);
+  background: var(--color-verdict-suspicious-bg) !important;
   color: var(--color-verdict-suspicious-text, currentColor);
-  border: 1px solid var(--color-verdict-suspicious-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-hash-highlight.fishbowl-verdict-benign {
-  background: var(--color-verdict-benign-bg);
+  background: var(--color-verdict-benign-bg) !important;
   color: var(--color-verdict-benign-text, currentColor);
-  border: 1px solid var(--color-verdict-benign-border) !important;
-  border-radius: 4px;
 }
 
 .fishbowl-hash-highlight.fishbowl-verdict-neutral {
-  background: var(--color-verdict-neutral-bg);
+  background: var(--color-verdict-neutral-bg) !important;
   color: var(--color-verdict-neutral-text, currentColor);
-  border: 1px solid var(--color-verdict-neutral-border) !important;
-  border-radius: 4px;
 }
 
-.fishbowl-hash-highlight.fishbowl-verdict-unknown {
-  border: 1px dashed var(--color-verdict-unknown-border) !important;
-}
+/*
+ * Unknown reputation: keep the entity's own color (no background override, so
+ * the base entity-type rule still supplies the soft fill) and add a dashed
+ * border in that entity's color to signal "no verdict". outline (not border)
+ * avoids inline layout shift, matching the underline mode's anti-reflow style.
+ */
+.fishbowl-ip-highlight.fishbowl-verdict-unknown     { outline: 1px dashed var(--c-ip-border) !important;     outline-offset: -1px; }
+.fishbowl-domain-highlight.fishbowl-verdict-unknown { outline: 1px dashed var(--c-domain-border) !important; outline-offset: -1px; }
+.fishbowl-file-highlight.fishbowl-verdict-unknown   { outline: 1px dashed var(--c-file-border) !important;   outline-offset: -1px; }
+.fishbowl-hash-highlight.fishbowl-verdict-unknown   { outline: 1px dashed var(--c-hash-border) !important;   outline-offset: -1px; }
 
-/* Selected highlight styling - generic fallback */
+/*
+ * Selected state: deepen the soft tint so selection reads as a stronger, still
+ * borderless chip rather than a hard edge. The fill uses the --*-selected token
+ * (falls back to --*-border when a theme defines no lighter value — dark mode).
+ * Background needs !important to beat the type rule's `background: … !important`.
+ */
 .fishbowl-highlight.selected {
-  box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--accent);
+  background: var(--accent-selected, var(--accent-border)) !important;
 }
 
-/* Selected state per entity - bg-gap ring + full entity color outer ring */
-.fishbowl-event-highlight.selected  { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-eventid); }
-.fishbowl-sid-highlight.selected    { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-sid); }
-.fishbowl-asn-highlight.selected    { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-asn); }
-.fishbowl-domain-highlight.selected { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-domain); }
-.fishbowl-file-highlight.selected   { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-file); }
-.fishbowl-hash-highlight.selected   { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-hash); }
-.fishbowl-ip-highlight.selected     { box-shadow: 0 0 0 2px var(--bg-0), 0 0 0 4px var(--c-ip); }
+.fishbowl-event-highlight.selected  { background: var(--c-eventid-selected, var(--c-eventid-border)) !important; }
+.fishbowl-sid-highlight.selected    { background: var(--c-sid-selected, var(--c-sid-border)) !important;         }
+.fishbowl-asn-highlight.selected    { background: var(--c-asn-selected, var(--c-asn-border)) !important;         }
+.fishbowl-domain-highlight.selected { background: var(--c-domain-selected, var(--c-domain-border)) !important;   }
+.fishbowl-file-highlight.selected   { background: var(--c-file-selected, var(--c-file-border)) !important;       }
+.fishbowl-hash-highlight.selected   { background: var(--c-hash-selected, var(--c-hash-border)) !important;       }
+.fishbowl-ip-highlight.selected     { background: var(--c-ip-selected, var(--c-ip-border)) !important;           }
+
+/*
+ * Verdict + selected: higher specificity so a selected verdict entity deepens to
+ * its own verdict tint instead of the plain entity color. (unknown has no verdict
+ * background, so the entity rule above handles it.)
+ */
+.fishbowl-ip-highlight.fishbowl-verdict-malicious.selected,
+.fishbowl-domain-highlight.fishbowl-verdict-malicious.selected,
+.fishbowl-file-highlight.fishbowl-verdict-malicious.selected,
+.fishbowl-hash-highlight.fishbowl-verdict-malicious.selected {
+  background: var(--color-verdict-malicious-selected, var(--color-verdict-malicious-border)) !important;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-suspicious.selected,
+.fishbowl-domain-highlight.fishbowl-verdict-suspicious.selected,
+.fishbowl-file-highlight.fishbowl-verdict-suspicious.selected,
+.fishbowl-hash-highlight.fishbowl-verdict-suspicious.selected {
+  background: var(--color-verdict-suspicious-selected, var(--color-verdict-suspicious-border)) !important;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-benign.selected,
+.fishbowl-domain-highlight.fishbowl-verdict-benign.selected,
+.fishbowl-file-highlight.fishbowl-verdict-benign.selected,
+.fishbowl-hash-highlight.fishbowl-verdict-benign.selected {
+  background: var(--color-verdict-benign-selected, var(--color-verdict-benign-border)) !important;
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-neutral.selected,
+.fishbowl-domain-highlight.fishbowl-verdict-neutral.selected,
+.fishbowl-file-highlight.fishbowl-verdict-neutral.selected,
+.fishbowl-hash-highlight.fishbowl-verdict-neutral.selected {
+  background: var(--color-verdict-neutral-selected, var(--color-verdict-neutral-border)) !important;
+}

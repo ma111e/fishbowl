@@ -98,6 +98,13 @@ class FishBowlExecutionMode {
         this.shortcutsHintElement = document.createElement('div');
         this.shortcutsHintElement.className = 'fishbowl-shortcuts-hint';
 
+        // The hint is a sibling of .fishbowl-hud in the shadow root, so it does not
+        // inherit the theme class. Stamp the current theme so it follows light/dark.
+        const themeClass = document.documentElement.classList.contains('fishbowl-theme-light')
+            ? 'fishbowl-theme-light'
+            : 'fishbowl-theme-dark';
+        this.shortcutsHintElement.classList.add(themeClass);
+
         const header = document.createElement('div');
         header.className = 'fishbowl-shortcuts-header';
         header.textContent = 'FishBowl Execution Mode';

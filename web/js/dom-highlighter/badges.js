@@ -269,10 +269,13 @@ class FishBowlBadgeManager {
             }
 
             if (typeof badgeType === 'string' && badgeType.startsWith('vt:')) {
+                const text = badgeType.slice('vt:'.length);
                 const badgeSpan = document.createElement('span');
                 badgeSpan.className = 'fishbowl-text-badge fishbowl-vt-badge';
-                badgeSpan.title = 'VirusTotal detection ratio';
-                badgeSpan.textContent = badgeType.slice('vt:'.length);
+                badgeSpan.title = text === '?/??'
+                    ? 'VirusTotal has no record for this entity'
+                    : 'VirusTotal detection ratio';
+                badgeSpan.textContent = text;
                 badgesContainer.appendChild(badgeSpan);
                 return;
             }
@@ -477,15 +480,20 @@ class FishBowlBadgeManager {
                 }
             }
 
-            if (key.toLowerCase() === 'virustotal' && results[key].details && results[key].details.engineResults) {
-                console.debug('Virustotal engine results:', results[key]);
-                const er = results[key].details.engineResults;
-                const detected = er.detected;
-                const total = er.total;
-                if (Number.isFinite(detected) && Number.isFinite(total) && total > 0) {
-                    badges.push(`vt:${detected}/${total}`);
-                } else {
-                    badges.push('VT');
+            if (key.toLowerCase() === 'virustotal' && results[key].details) {
+                const details = results[key].details;
+                const er = details.engineResults;
+                if (er) {
+                    console.debug('Virustotal engine results:', results[key]);
+                    const detected = er.detected;
+                    const total = er.total;
+                    if (Number.isFinite(detected) && Number.isFinite(total) && total > 0) {
+                        badges.push(`vt:${detected}/${total}`);
+                    } else {
+                        badges.push('VT');
+                    }
+                } else if (details.error === 'not_found' || details.error === 'try_new_search_prompt') {
+                    badges.push('vt:?/??');
                 }
             }
 

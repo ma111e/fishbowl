@@ -1109,26 +1109,19 @@ class FishBowlSelectionManager {
         const style = targetHighlight.style;
         const originalTransitionValue = style.getPropertyValue('transition');
         const originalTransitionPriority = style.getPropertyPriority('transition');
-        const originalBorderValue = style.getPropertyValue('border');
-        const originalBorderPriority = style.getPropertyPriority('border');
         const originalBoxShadowValue = style.getPropertyValue('box-shadow');
         const originalBoxShadowPriority = style.getPropertyPriority('box-shadow');
 
-        style.setProperty('transition', 'border 0.2s ease-in-out, box-shadow 0.2s ease-in-out');
-        style.setProperty('border', '2px solid #ffff00', 'important');
-        style.setProperty('box-shadow', '0 0 0 2px rgba(255, 255, 0, 0.45)', 'important');
+        // box-shadow only (no border) so the pulse hugs the borderless, rounded
+        // highlight without shifting surrounding text: a bright ring + soft glow.
+        style.setProperty('transition', 'box-shadow 0.2s ease-in-out');
+        style.setProperty('box-shadow', '0 0 0 2px #ffff00, 0 0 0 5px rgba(255, 255, 0, 0.35)', 'important');
 
         setTimeout(() => {
             if (originalTransitionValue) {
                 style.setProperty('transition', originalTransitionValue, originalTransitionPriority);
             } else {
                 style.removeProperty('transition');
-            }
-
-            if (originalBorderValue) {
-                style.setProperty('border', originalBorderValue, originalBorderPriority);
-            } else {
-                style.removeProperty('border');
             }
 
             if (originalBoxShadowValue) {
@@ -1202,6 +1195,13 @@ class FishBowlSelectionManager {
         // Overlay backdrop
         const overlay = document.createElement('div');
         overlay.className = 'fishbowl-service-picker-overlay';
+
+        // The overlay is a sibling of .fishbowl-hud in the shadow root, so it does not
+        // inherit the theme class. Stamp the current theme so it follows light/dark.
+        const themeClass = document.documentElement.classList.contains('fishbowl-theme-light')
+            ? 'fishbowl-theme-light'
+            : 'fishbowl-theme-dark';
+        overlay.classList.add(themeClass);
 
         // Box
         const box = document.createElement('div');

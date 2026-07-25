@@ -23,12 +23,3 @@
   /*border: 1px solid var(--color-panel-border);*/
 }
 
-/* ===== HIGHLIGHT STYLING ===== */
-
-/* Base highlight styling */
-.fishbowl-highlight {
-  cursor: pointer;
-  border-radius: var(--radius-sm, 4px);
-  padding: 0px 6px;
-  position: relative;
-}

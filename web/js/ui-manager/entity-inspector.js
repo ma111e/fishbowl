@@ -489,7 +489,7 @@ class FishBowlEntityInspector {
         }
 
         // --- Raw per-source results ---
-        const resultsEl = this._renderResults(entity.cachedData?.results);
+        const resultsEl = this._renderResults(entity);
         if (resultsEl) {
             this.detailElement.appendChild(this._section('Sources', resultsEl));
         }
@@ -552,10 +552,57 @@ class FishBowlEntityInspector {
     }
 
     /**
+     * Resolve the external page URL for a service source key, so the user can
+     * open that service's own page for the entity. Prefers the per-entity-type
+     * REPUTATION_SERVICE_DEFS[type] (each has the correct URL for that type) and
+     * falls back to the flat ALL_SERVICES list (the same source of truth the
+     * sandbox enrichment blocks use). Uses _actionValue() so ASN rows link on the
+     * bare number. Returns null for apiMode-only services (e.g. shodan, bazaar)
+     * that have no web page.
+     */
+    _serviceUrl(sourceKey, entity) {
+        try {
+            const key = String(sourceKey || '').toLowerCase();
+            const defs = FishBowlConfig.REPUTATION_SERVICE_DEFS?.[entity.type] || [];
+            const def = defs.find(s => (s.id || '').toLowerCase() === key);
+            const template = def?.urlTemplate
+                || (FishBowlConfig.ALL_SERVICES || [])
+                    .find(s => (s.id || '').toLowerCase() === key)?.url;
+            if (!template) return null;
+            return template.replace(
+                FishBowlConsts.VALUE_PLACEHOLDER,
+                encodeURIComponent(this._actionValue(entity))
+            );
+        } catch (e) {
+            console.warn('[FishBowl EntityInspector] Failed to resolve service URL', e);
+            return null;
+        }
+    }
+
+    /**
+     * Build a small "open service page in new tab" button for a source header,
+     * matching the external-link affordance used by the sandbox enrichment blocks.
+     */
+    _serviceVisitButton(url) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'fishbowl-inspector-source-visit';
+        btn.title = 'Open service page in new tab';
+        btn.setAttribute('aria-label', 'Open service page in new tab');
+        btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1H2a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1V7"/><path d="M7 1h4v4"/><path d="M5 7L11 1"/></svg>';
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.open(url, '_blank', 'noopener');
+        });
+        return btn;
+    }
+
+    /**
      * Render a compact table of scalar fields from each enrichment source's
      * `details` object. Nested objects/arrays are summarized, not expanded.
      */
-    _renderResults(results) {
+    _renderResults(entity) {
+        const results = entity.cachedData?.results;
         if (!results || typeof results !== 'object') return null;
         const sourceKeys = Object.keys(results);
         if (sourceKeys.length === 0) return null;
@@ -578,6 +625,10 @@ class FishBowlEntityInspector {
             const nameText = document.createElement('span');
             nameText.textContent = sourceKey;
             name.appendChild(nameText);
+
+            const url = this._serviceUrl(sourceKey, entity);
+            if (url) name.appendChild(this._serviceVisitButton(url));
+
             sourceEl.appendChild(name);
 
             for (const field of Object.keys(details)) {

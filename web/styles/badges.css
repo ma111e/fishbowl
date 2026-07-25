@@ -172,6 +172,16 @@
   border-color: var(--color-verdict-benign-border);
 }
 
+.fishbowl-ip-highlight.fishbowl-verdict-unknown+.fishbowl-badges-container .fishbowl-vt-badge {
+  color: var(--color-verdict-unknown-text);
+  border-color: var(--color-verdict-unknown-border);
+}
+
+.fishbowl-ip-highlight.fishbowl-verdict-unknown+.fishbowl-badges-container .fishbowl-abuseipdb-badge {
+  color: var(--color-verdict-unknown-text);
+  border-color: var(--color-verdict-unknown-border);
+}
+
 /* ASN enrichment badges */
 .fishbowl-type-badge {
   text-transform: uppercase;

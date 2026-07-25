@@ -66,11 +66,24 @@ class FishBowlSecurityHUD {
     ];
 
     async createHUD() {
+        // Remove any pre-existing host so a re-create (e.g. remount) never leaves
+        // an orphaned <fishbowl-hud> behind.
+        if (this.hudHost && this.hudHost.parentNode) {
+            this.hudHost.parentNode.removeChild(this.hudHost);
+        }
+
         // --- Shadow DOM host ---
         this.hudHost = document.createElement('fishbowl-hud');
         const zHud = (globalThis.FishBowlConstants?.Z.HUD_BASE ?? 999999);
         this.hudHost.style.cssText = `position:fixed;inset:0;z-index:${zHud};pointer-events:none;display:block;`;
-        document.body.appendChild(this.hudHost);
+        // Attach to documentElement rather than body: heavy SPAs (e.g. OpenSearch
+        // Discover) replace document.body's children during their initial render,
+        // which would detach a body-mounted host. A child of <html> survives that.
+        document.documentElement.appendChild(this.hudHost);
+
+        // Give auto-heal a fresh chance on every (re)mount, including manual remount.
+        this._hostReattachTimestamps = [];
+        this._hostReattachDisabled = false;
 
         const shadow = this.hudHost.attachShadow({ mode: 'open' });
         this.hudShadowRoot = shadow;
@@ -128,6 +141,72 @@ class FishBowlSecurityHUD {
 
             this.updateTheme();
         }, 0);
+
+        // Keep the host attached even if the page tears it out of the DOM.
+        this.setupHostAttachmentGuard();
+    }
+
+    /**
+     * Self-healing guard: heavy dynamic SPAs can detach the <fishbowl-hud> host
+     * (e.g. by replacing document.body) after the initial mount, silently hiding
+     * the overlay. This re-attaches the *existing* host node — the same thing the
+     * manual remount shortcut does — without rebuilding it.
+     *
+     * Resource-safety: the observer watches only documentElement's direct children
+     * (no subtree), so it does NOT fire on the SPA's ordinary body/subtree churn.
+     * A circuit breaker bounds worst-case work if a host page actively strips the
+     * node, and healing is a single appendChild (no CSS fetch / analysis).
+     */
+    setupHostAttachmentGuard() {
+        if (this.hostAttachmentObserver || this.hostAttachmentInterval) {
+            return;
+        }
+
+        this._hostReattachTimestamps = [];
+        this._hostReattachDisabled = false;
+
+        const reattachIfDetached = () => {
+            if (this._hostReattachDisabled) return;
+            if (!this.hudHost || this.hudHost.isConnected) return;
+
+            const now = Date.now();
+            // Drop timestamps older than the circuit-breaker window (~2s).
+            this._hostReattachTimestamps = this._hostReattachTimestamps.filter(
+                (t) => now - t < 2000
+            );
+            if (this._hostReattachTimestamps.length >= 5) {
+                // The page is actively fighting us; stop spinning. Manual remount
+                // (resetHUD) is still available to the user.
+                this._hostReattachDisabled = true;
+                console.warn('[FishBowl HUD] Host repeatedly detached by the page; auto-reattach disabled. Use the remount shortcut if needed.');
+                return;
+            }
+            this._hostReattachTimestamps.push(now);
+            document.documentElement.appendChild(this.hudHost);
+        };
+
+        // childList only, no subtree: fires solely when <html>'s direct children
+        // change (e.g. document.body replacement), not on page content mutations.
+        this.hostAttachmentObserver = new MutationObserver(reattachIfDetached);
+        this.hostAttachmentObserver.observe(document.documentElement, {
+            childList: true
+        });
+
+        // Low-frequency fallback for the rare swap that doesn't surface as a
+        // documentElement childList mutation. A boolean check + occasional
+        // appendChild is cheaper than the existing background-color interval.
+        this.hostAttachmentInterval = setInterval(reattachIfDetached, 2000);
+    }
+
+    teardownHostAttachmentGuard() {
+        if (this.hostAttachmentObserver) {
+            this.hostAttachmentObserver.disconnect();
+            this.hostAttachmentObserver = null;
+        }
+        if (this.hostAttachmentInterval) {
+            clearInterval(this.hostAttachmentInterval);
+            this.hostAttachmentInterval = null;
+        }
     }
 
     /**
@@ -217,12 +296,20 @@ class FishBowlSecurityHUD {
             htmlElement.classList.add(themeClass);
         }
 
-        // The selection action panel is a sibling of this.hud in the shadow root, so it
-        // does not inherit the theme class. Keep an open panel in sync explicitly.
-        const panel = this.hudShadowRoot?.getElementById('selection-actions-panel');
-        if (panel) {
-            panel.classList.remove('fishbowl-theme-light', 'fishbowl-theme-dark');
-            if (themeClass) panel.classList.add(themeClass);
+        // The selection action panel and the execution-mode overlays (shortcuts hint,
+        // service picker) are siblings of this.hud in the shadow root, so they do not
+        // inherit the theme class. Keep any that are open in sync explicitly.
+        const siblingSelectors = [
+            '#selection-actions-panel',
+            '.fishbowl-shortcuts-hint',
+            '.fishbowl-service-picker-overlay',
+        ];
+        for (const sel of siblingSelectors) {
+            const el = this.hudShadowRoot?.querySelector(sel);
+            if (el) {
+                el.classList.remove('fishbowl-theme-light', 'fishbowl-theme-dark');
+                if (themeClass) el.classList.add(themeClass);
+            }
         }
     }
 
@@ -231,14 +318,12 @@ class FishBowlSecurityHUD {
 
         const effectiveTheme = this.settings?.theme;
         if (effectiveTheme === 'dark' || effectiveTheme === 'light') {
-            this.teardownBackgroundColorObserver();
             this.applyTheme(effectiveTheme);
             return;
         }
 
-        // Auto theme
-        this.detectBackgroundColorAndAdapt();
-        this.setupBackgroundColorObserver();
+        // Auto theme: derive light/dark from the host page's background.
+        this.applyResolvedAutoTheme();
     }
 
     applyTheme(effectiveTheme) {
@@ -247,101 +332,44 @@ class FishBowlSecurityHUD {
         this.setThemeClass(themeClass);
     }
 
-    /**
-     * Detects the color of the background behind panels and applies a global theme class
-     * to the top-level HUD element for consistent styling
-     */
-    detectBackgroundColorAndAdapt() {
+    applyResolvedAutoTheme() {
         if (!this.hud) return;
-
-        // Default to document body background
-        const bodyBgColor = window.getComputedStyle(document.body).backgroundColor;
-        const bodyRgb = this.parseRgb(bodyBgColor);
-
-        if (bodyRgb) {
-            const bodyBrightness = (0.299 * bodyRgb.r + 0.587 * bodyRgb.g + 0.114 * bodyRgb.b) / 255;
-            const isLight = bodyBrightness > 0.5;
-            const themeClass = isLight ? 'fishbowl-theme-light' : 'fishbowl-theme-dark';
-
-            this.setThemeClass(themeClass);
-
-            console.debug(`Applied ${isLight ? 'light' : 'dark'} theme to FishBowl HUD and HTML`);
-        } else {
-            // Fallback to dark theme
-            this.setThemeClass('fishbowl-theme-dark');
-        }
+        const resolved = this.detectThemeFromPageBackground();
+        this.setThemeClass(resolved === 'light' ? 'fishbowl-theme-light' : 'fishbowl-theme-dark');
     }
 
     /**
-     * Parse RGB color string into components
-     * @param {string} rgb - RGB color string (e.g., "rgb(255, 255, 255)")
-     * @returns {object|null} Object with r, g, b components or null if parsing failed
+     * Derives the light/dark theme for "auto" mode from the first opaque background
+     * colour behind the overlay (document element, then body), using its perceived
+     * brightness. Defaults to 'dark' when no opaque background can be read.
+     * @returns {'light'|'dark'}
+     */
+    detectThemeFromPageBackground() {
+        for (const el of [document.documentElement, document.body]) {
+            if (!el) continue;
+            const rgb = this.parseRgb(window.getComputedStyle(el).backgroundColor);
+            if (!rgb || rgb.a < 0.9) continue; // skip transparent/near-transparent layers
+            const brightness = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+            return brightness > 0.5 ? 'light' : 'dark';
+        }
+        return 'dark';
+    }
+
+    /**
+     * Parse an rgb()/rgba() colour string into components including alpha.
+     * @param {string} rgb - e.g. "rgb(255, 255, 255)" or "rgba(0, 0, 0, 0)"
+     * @returns {{r:number,g:number,b:number,a:number}|null} null if parsing failed
      */
     parseRgb(rgb) {
         if (!rgb) return null;
-
-        // Handle rgba format
-        if (rgb.startsWith('rgba')) {
-            const match = rgb.match(/rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)/);
-            if (match) {
-                return {
-                    r: parseInt(match[1], 10),
-                    g: parseInt(match[2], 10),
-                    b: parseInt(match[3], 10)
-                };
-            }
-        }
-
-        // Handle rgb format
-        if (rgb.startsWith('rgb')) {
-            const match = rgb.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
-            if (match) {
-                return {
-                    r: parseInt(match[1], 10),
-                    g: parseInt(match[2], 10),
-                    b: parseInt(match[3], 10)
-                };
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Sets up a mutation observer to detect background color changes and adapt HUD styling
-     * using the global theme approach
-     */
-    setupBackgroundColorObserver() {
-        if (this.backgroundObserver || this.backgroundColorInterval) {
-            return;
-        }
-        // Create a MutationObserver to monitor for style changes that might affect the background color
-        this.backgroundObserver = new MutationObserver(() => {
-            this.detectBackgroundColorAndAdapt();
-        });
-
-        // Start observing style and attribute changes on the body
-        this.backgroundObserver.observe(document.body, {
-            attributes: true,
-            attributeFilter: ['style', 'class']
-        });
-
-        // Also observe page background color changes
-        // Check for background color changes every 2 seconds as a fallback
-        this.backgroundColorInterval = setInterval(() => {
-            this.detectBackgroundColorAndAdapt();
-        }, 2000);
-    }
-
-    teardownBackgroundColorObserver() {
-        if (this.backgroundObserver) {
-            this.backgroundObserver.disconnect();
-            this.backgroundObserver = null;
-        }
-        if (this.backgroundColorInterval) {
-            clearInterval(this.backgroundColorInterval);
-            this.backgroundColorInterval = null;
-        }
+        const match = rgb.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+)\s*)?\)/);
+        if (!match) return null;
+        return {
+            r: parseInt(match[1], 10),
+            g: parseInt(match[2], 10),
+            b: parseInt(match[3], 10),
+            a: match[4] !== undefined ? parseFloat(match[4]) : 1
+        };
     }
 
     getHUDHTML() {
@@ -609,7 +637,7 @@ class FishBowlSecurityHUD {
      * Perform security analysis of the current page
      * @returns {Promise<void>}
      */
-    async performAnalysis(isInitialLoad = false) {
+    async performAnalysis(silent = false) {
         if (this.analysisInProgress) {
             window.FishBowlUiManager.addFeedEntry("Analysis already in progress...", "warning");
             return;
@@ -656,7 +684,7 @@ class FishBowlSecurityHUD {
                 if (!this._analysisCache) this._analysisCache = {};
                 this._analysisCache[window.location.href] = localResponse;
                 this.lastAnalysisResponse = localResponse;
-                await this.processAnalysisResults(localResponse, isInitialLoad);
+                await this.processAnalysisResults(localResponse, silent);
 
                 try {
                     if (window.FishBowlUiManager) {
@@ -697,7 +725,7 @@ class FishBowlSecurityHUD {
         }
     }
 
-    processAnalysisResults(analysis, isInitialLoad = false) {
+    processAnalysisResults(analysis, silent = false) {
 
         // Update UI panels with results based on settings
         if (this.settings.scanIpAddresses) {
@@ -744,8 +772,9 @@ class FishBowlSecurityHUD {
             window.FishBowlUiManager.refreshEntityInspector();
         }
 
-        // Update the feed with summary message (skip on the automatic initial scan)
-        if (!isInitialLoad) {
+        // Update the feed with summary message (skip on automatic/silent scans:
+        // initial load, SPA navigation re-scans, and remounts).
+        if (!silent) {
             window.FishBowlUiManager.addFeedEntry(
                 `Scan complete - Found ${analysis.ipAddresses?.length || 0} IPs, ${analysis.asNumbers?.length || 0} ASNs, ${analysis.domains?.length || 0} domains, ${analysis.windowsEvents?.length || 0} event codes, ${analysis.sids?.length || 0} SIDs, ${analysis.hashes?.length || 0} hashes, ${analysis.files?.length || 0} files`,
                 'complete'
@@ -788,14 +817,8 @@ class FishBowlSecurityHUD {
             window.removeEventListener('resize', this.boundResizeHandler);
         }
 
-        // Clean up background color observer and interval
-        if (this.backgroundObserver) {
-            this.backgroundObserver.disconnect();
-        }
-
-        if (this.backgroundColorInterval) {
-            clearInterval(this.backgroundColorInterval);
-        }
+        // Stop the self-healing guard so it doesn't re-attach the host during teardown
+        this.teardownHostAttachmentGuard();
 
         // Remove the shadow host from DOM if it exists
         if (this.hudHost && this.hudHost.parentNode) {

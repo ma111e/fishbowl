@@ -350,6 +350,19 @@ class FishBowlDomHighlighter {
         } catch (e) {
             console.warn('[FishBowl DomHighlighter] Failed to load initial textarea inspect overlay default setting', e);
         }
+
+        // Apply the highlight visual style (full background vs. subtle underline) from settings.
+        // FishBowlSettingsSync fires immediately with current settings and again on every change,
+        // so this covers both fresh page loads and live updates from the popup.
+        try {
+            if (window.FishBowlSettingsSync) {
+                window.FishBowlSettingsSync.subscribe((settings) => {
+                    document.body.classList.toggle('fishbowl-highlights-underline', !!settings?.subtleHighlights);
+                });
+            }
+        } catch (e) {
+            console.warn('[FishBowl DomHighlighter] Failed to subscribe to highlight style setting', e);
+        }
     }
 
     observeTextareas() {
@@ -1488,6 +1501,24 @@ class FishBowlDomHighlighter {
 :host-context(body.fishbowl-highlights-hidden) .fishbowl-badges-container {
   display: none !important;
 }
+
+:host-context(body.fishbowl-highlights-underline) .fishbowl-highlight {
+  background: transparent !important;
+  border-color: transparent !important;
+  border-radius: 3px !important;
+}
+:host-context(body.fishbowl-highlights-underline) .fishbowl-ip-highlight:not(.ip-item):not(.selected)         { box-shadow: inset 0 -2px 0 0 var(--c-ip-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-event-highlight:not(.event-item):not(.selected)   { box-shadow: inset 0 -2px 0 0 var(--color-event-highlight-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-sid-highlight:not(.sid-item):not(.selected)       { box-shadow: inset 0 -2px 0 0 var(--color-sid-highlight-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-asn-highlight:not(.asn-item):not(.selected)       { box-shadow: inset 0 -2px 0 0 var(--color-asn-highlight-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-domain-highlight:not(.domain-item):not(.selected) { box-shadow: inset 0 -2px 0 0 var(--color-domain-highlight-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-file-highlight:not(.file-item):not(.selected)     { box-shadow: inset 0 -2px 0 0 var(--color-file-highlight-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-hash-highlight:not(.hash-item):not(.selected)     { box-shadow: inset 0 -2px 0 0 var(--color-hash-highlight-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-ip-highlight.fishbowl-verdict-malicious:not(.selected)  { box-shadow: inset 0 -2px 0 0 var(--color-verdict-malicious-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-ip-highlight.fishbowl-verdict-suspicious:not(.selected) { box-shadow: inset 0 -2px 0 0 var(--color-verdict-suspicious-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-ip-highlight.fishbowl-verdict-benign:not(.selected)     { box-shadow: inset 0 -2px 0 0 var(--color-verdict-benign-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-ip-highlight.fishbowl-verdict-neutral:not(.selected)    { box-shadow: inset 0 -2px 0 0 var(--color-verdict-neutral-border) !important; }
+:host-context(body.fishbowl-highlights-underline) .fishbowl-ip-highlight.fishbowl-verdict-unknown:not(.selected)    { box-shadow: inset 0 -2px 0 0 var(--color-verdict-unknown-border) !important; }
 `;
 
         const activeStyles = [
